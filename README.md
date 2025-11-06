@@ -4,9 +4,11 @@ A comprehensive Python framework for simulating epidemic dynamics using compartm
 
 ## Features
 
-- **Multiple Epidemic Models**: SIR, SEIR, SIRS with extensible architecture
-- **Intervention Modeling**: Simulate lockdowns, social distancing, vaccination campaigns
+- **Multiple Epidemic Models**: SIR, SEIR, SIRS, SEIRV with extensible architecture
+- **Vaccination Modeling**: Time-dependent vaccination campaigns with efficacy
+- **Intervention Modeling**: Simulate lockdowns, social distancing, and other NPIs
 - **Stochastic Simulations**: Add noise to capture uncertainty and random effects
+- **Research-Ready**: Pre-built experiments for vaccination timing optimization
 - **Analysis Tools**: Built-in metrics and visualization utilities
 - **Modular Design**: Easy to extend with new models and features
 
@@ -22,6 +24,7 @@ modsimproj/
 │   ├── sir_model.py           # SIR model
 │   ├── seir_model.py          # SEIR model
 │   ├── sirs_model.py          # SIRS model
+│   ├── seirv_model.py         # SEIR with Vaccination
 │   └── mixin_models.py        # Models with enhanced features
 │
 ├── interventions/             # Intervention strategies
@@ -140,6 +143,34 @@ python experiments/stochastic_simulation.py
 ```
 
 Results will be saved in the `results/` directory.
+
+## Research Applications
+
+### RQ1: Vaccination Timing Optimization
+
+A comprehensive research study investigating how vaccination campaign timing affects epidemic outcomes across different R₀ regimes.
+
+**Quick demo:**
+```bash
+python experiments/rq1_vaccination_timing_quick.py
+```
+
+**Full analysis:**
+```bash
+python experiments/rq1_vaccination_timing.py
+```
+
+**Research questions addressed:**
+- What is the optimal time to start vaccination campaigns?
+- How does R₀ affect timing flexibility?
+- How do vaccine efficacy and coverage rate modify optimal strategies?
+
+See `experiments/RQ1_RESEARCH_GUIDE.md` for detailed methodology and interpretation.
+
+**Key findings preview:**
+- High R₀ diseases require early vaccination with narrow optimal windows
+- Low R₀ diseases allow more timing flexibility
+- Vaccine efficacy has stronger impact than timing for moderate R₀ values
 
 ## Key Concepts
 

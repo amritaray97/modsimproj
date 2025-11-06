@@ -13,5 +13,8 @@ networkx>=2.6.0
 # Optional: Data handling
 pandas>=1.3.0
 
+# Optional: Progress bars
+tqdm>=4.62.0
+
 # Optional: Additional visualization
 seaborn>=0.11.0
