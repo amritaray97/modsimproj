@@ -1,0 +1,24 @@
+
+{
+        "folders":
+        [
+                {
+                        "path": "core",
+                },
+                {
+                        "path": "models",
+                },
+                {
+                        "path": "analysis",
+                },
+                {
+                        "path": "interventions"
+                },
+                {
+                        "path": "experiments"
+                },
+                {
+                        "path": "results"
+                },
+        ],
+}
