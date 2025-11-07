@@ -1,16 +1,7 @@
 """
-SIRS (Susceptible-Infectious-Recovered-Susceptible) Model Implementation
-"""
-
-import numpy as np
-from core.base_models import CompartmentalModel, SIRSParameters
-
-
-class SIRSModel(CompartmentalModel):
-    """
-    SIRS epidemic model with waning immunity.
-
-    Compartments:
+SIRS (Susceptible-Infectious-Recovered-Susceptible) Model Implementation. 
+This is a model that shows waning immunity. 
+We define the compartments as follows:
         S - Susceptible: individuals who can contract the disease
         I - Infectious: individuals who are infected and can transmit
         R - Recovered: individuals who have recovered and have temporary immunity
@@ -25,8 +16,14 @@ class SIRSModel(CompartmentalModel):
         dI/dt = beta * S * I - gamma * I
         dR/dt = gamma * I - omega * R
 
-    With waning immunity, the disease can become endemic with sustained oscillations.
-    """
+With waning immunity, the disease can become endemic with sustained oscillations.
+"""
+
+import numpy as np
+from core.base_models import CompartmentalModel, SIRSParameters
+
+
+class SIRSModel(CompartmentalModel):
 
     def __init__(self, params: SIRSParameters, S0: float = 0.99, I0: float = 0.01, R0: float = 0.0):
         super().__init__(params)
@@ -35,17 +32,19 @@ class SIRSModel(CompartmentalModel):
         self.I0 = I0
         self.R0 = R0
 
+"""
+We proceed to calculate the derivatives for the SIRS model.
+
+Args:
+    t: Current time
+    y: Current state [S, I, R]
+
+Returns:
+    Array of derivatives [dS/dt, dI/dt, dR/dt]
+
+"""
     def derivatives(self, t: float, y: np.ndarray) -> np.ndarray:
-        """
-        Calculate the derivatives for the SIRS model.
-
-        Args:
-            t: Current time
-            y: Current state [S, I, R]
-
-        Returns:
-            Array of derivatives [dS/dt, dI/dt, dR/dt]
-        """
+        
         S, I, R = y
 
         # Force of infection
@@ -59,16 +58,16 @@ class SIRSModel(CompartmentalModel):
         return np.array([dS, dI, dR])
 
     def get_initial_conditions(self) -> np.ndarray:
-        """Return initial conditions [S0, I0, R0]"""
         return np.array([self.S0, self.I0, self.R0])
 
-    def calculate_endemic_equilibrium(self) -> dict:
-        """
-        Calculate the endemic equilibrium if it exists.
+"""
+Now we have to calculate the endemic equilibrium if it exists.
 
-        Returns:
-            Dictionary with equilibrium values for S, I, R
-        """
+Returns:
+    Dictionary with equilibrium values for S, I, R
+"""
+    def calculate_endemic_equilibrium(self) -> dict:
+        
         R0 = self.calculate_R0()
 
         if R0 <= 1:
