@@ -1,0 +1,30 @@
+{
+  "model": {
+    "type": "SIRS",
+    "description": "SIRS model with waning immunity - endemic behavior"
+  },
+  "parameters": {
+    "beta": 0.5,
+    "gamma": 0.1,
+    "omega": 0.01,
+    "population": 1.0
+  },
+  "initial_conditions": {
+    "S0": 0.99,
+    "I0": 0.01,
+    "R0": 0.0
+  },
+  "simulation": {
+    "t_start": 0,
+    "t_end": 1000,
+    "num_points": 2000,
+    "method": "RK45"
+  },
+  "output": {
+    "save_plots": true,
+    "output_dir": "results",
+    "plot_format": "png",
+    "dpi": 300,
+    "show_plots": false
+  }
+}

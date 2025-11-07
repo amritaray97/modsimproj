@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "SEIRV",
+    "description": "SEIRV model with vaccination campaign"
+  },
+  "parameters": {
+    "beta": 0.6,
+    "sigma": 0.2,
+    "gamma": 0.1,
+    "vaccine_efficacy": 0.8,
+    "vaccination_rate": 0.01,
+    "population": 1.0
+  },
+  "initial_conditions": {
+    "S0": 0.99,
+    "E0": 0.0,
+    "I0": 0.01,
+    "R0": 0.0,
+    "V0": 0.0
+  },
+  "vaccination": {
+    "campaign_type": "timed",
+    "start_time": 20,
+    "duration": 100,
+    "rate": 0.02,
+    "efficacy": 0.85
+  },
+  "simulation": {
+    "t_start": 0,
+    "t_end": 300,
+    "num_points": 1000,
+    "method": "RK45"
+  },
+  "output": {
+    "save_plots": true,
+    "output_dir": "results",
+    "plot_format": "png",
+    "dpi": 300,
+    "show_plots": false
+  }
+}

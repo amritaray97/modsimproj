@@ -5,6 +5,7 @@ A comprehensive Python framework for simulating epidemic dynamics using compartm
 ## Features
 
 - **Multiple Epidemic Models**: SIR, SEIR, SIRS, SEIRV with extensible architecture
+- **Configuration-Based Execution**: Run simulations with JSON configuration files for easy parameter management
 - **Vaccination Modeling**: Time-dependent vaccination campaigns with efficacy
 - **Intervention Modeling**: Simulate lockdowns, social distancing, and other NPIs
 - **Stochastic Simulations**: Add noise to capture uncertainty and random effects
@@ -34,12 +35,22 @@ modsimproj/
 │   ├── metrics.py             # Analysis metrics
 │   └── visualization.py       # Plotting utilities
 │
+├── configs/                   # Configuration files for simulations
+│   ├── README.md              # Configuration documentation
+│   ├── sir_basic.json         # Basic SIR configuration
+│   ├── seir_with_interventions.json
+│   ├── sirs_endemic.json
+│   ├── seirv_vaccination.json
+│   └── seir_stochastic.json
+│
 ├── experiments/               # Example simulations
 │   ├── basic_sir_simulation.py
 │   ├── seir_with_interventions.py
 │   ├── model_comparison.py
 │   └── stochastic_simulation.py
 │
+├── config_loader.py           # Configuration file loader
+├── run_simulation.py          # Main simulation runner
 └── results/                   # Output directory for plots and data
 ```
 
@@ -58,7 +69,36 @@ pip install -r requirements.txt
 
 ## Quick Start
 
-### Basic SIR Simulation
+### Using Configuration Files (Recommended)
+
+The easiest way to run simulations is using the configuration system:
+
+```bash
+# Run a basic SIR simulation
+python run_simulation.py --config configs/sir_basic.json
+
+# Run SEIR with interventions
+python run_simulation.py --config configs/seir_with_interventions.json
+
+# Run SEIRV with vaccination
+python run_simulation.py --config configs/seirv_vaccination.json
+
+# Run stochastic simulation
+python run_simulation.py --config configs/seir_stochastic.json
+```
+
+**Available configuration templates:**
+- `configs/sir_basic.json` - Basic SIR model
+- `configs/seir_with_interventions.json` - SEIR with lockdown
+- `configs/sirs_endemic.json` - SIRS with waning immunity
+- `configs/seirv_vaccination.json` - SEIRV with vaccination campaign
+- `configs/seir_stochastic.json` - SEIR with stochastic noise
+
+See `configs/README.md` for detailed configuration documentation.
+
+### Programmatic Usage
+
+#### Basic SIR Simulation
 
 ```python
 from core.base_models import SIRParameters
@@ -78,7 +118,7 @@ results = model.simulate(t_span=(0, 200))
 model.plot_dynamics(results)
 ```
 
-### SEIR with Interventions
+#### SEIR with Interventions
 
 ```python
 from core.base_models import SEIRParameters

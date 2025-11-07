@@ -2,6 +2,7 @@
 Combination models using mixins for enhanced functionality.
 """
 
+import numpy as np
 from core.mixins import StochasticMixin, InterventionMixin
 from .sir_model import SIRModel
 from .seir_model import SEIRModel
@@ -11,6 +12,15 @@ from .seir_model import SEIRModel
 class StochasticSIR(StochasticMixin, SIRModel):
     """SIR model with stochastic simulation capability"""
     pass
+
+
+# SIR model with interventions
+class SIRWithInterventions(InterventionMixin, SIRModel):
+    """SIR model with intervention capabilities"""
+
+    def derivatives(self, t: float, y) -> np.ndarray:
+        """Use intervention-modified derivatives"""
+        return self.derivatives_with_intervention(t, y)
 
 
 # SEIR model with interventions
