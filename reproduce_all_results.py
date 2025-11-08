@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
-"""
-Master Reproducibility Script
-==============================
 
-This script reproduces ALL results from the epidemic simulator project in approximately 30 minutes.
-
-Usage:
-    python reproduce_all_results.py
-
-Outputs:
-    - All mathematical verification results
-    - All comprehensive visualizations
-    - All configuration-based simulations
-    - RQ1 vaccination timing analysis
-    - Summary report of all generated files
-
-Estimated Runtime: 20-30 minutes (depending on system)
-"""
 
 import sys
 import time
@@ -24,9 +7,10 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 import json
+from typing import Optional
+
 
 class ReproducibilityRunner:
-    """Master script to reproduce all project results."""
 
     def __init__(self):
         self.project_root = Path(__file__).parent
@@ -40,18 +24,15 @@ class ReproducibilityRunner:
         }
 
     def print_header(self, text):
-        """Print a formatted section header."""
         print("\n" + "="*80)
         print(f"  {text}")
         print("="*80 + "\n")
 
     def print_step(self, step_num, total_steps, description):
-        """Print step progress."""
         print(f"\n[{step_num}/{total_steps}] {description}")
         print("-" * 80)
 
     def run_command(self, cmd, description, cwd=None):
-        """Run a command and track its status."""
         print(f"Running: {' '.join(cmd)}")
         try:
             result = subprocess.run(
@@ -64,23 +45,23 @@ class ReproducibilityRunner:
 
             if result.returncode == 0:
                 self.results['steps_completed'].append(description)
-                print(f"✓ {description} completed successfully")
+                print(f"{description} completed successfully")
                 if result.stdout:
                     print(result.stdout[-500:] if len(result.stdout) > 500 else result.stdout)
                 return True
             else:
                 self.results['steps_failed'].append(description)
-                print(f"✗ {description} failed!")
+                print(f"{description} failed!")
                 print(f"Error output:\n{result.stderr}")
                 return False
 
         except subprocess.TimeoutExpired:
             self.results['steps_failed'].append(f"{description} (timeout)")
-            print(f"✗ {description} timed out!")
+            print(f"{description} timed out!")
             return False
         except Exception as e:
             self.results['steps_failed'].append(f"{description} (error: {e})")
-            print(f"✗ {description} encountered error: {e}")
+            print(f"{description} encountered error: {e}")
             return False
 
     def step1_mathematical_verification(self):
@@ -117,7 +98,7 @@ class ReproducibilityRunner:
         for config in configs:
             config_path = self.project_root / config
             if not config_path.exists():
-                print(f"⚠ Config file not found: {config}")
+                print(f"Config file not found: {config}")
                 continue
 
             config_name = config_path.stem
@@ -139,12 +120,11 @@ class ReproducibilityRunner:
         return all_success
 
     def step3_model_comparison(self):
-        """Step 3: Run model comparison experiment."""
         self.print_step(3, 6, "Model Comparison Analysis")
 
         experiment_file = self.project_root / 'experiments' / 'model_comparison.py'
         if not experiment_file.exists():
-            print(f"⚠ Experiment file not found: {experiment_file}")
+            print(f"Experiment file not found: {experiment_file}")
             return True  # Not critical
 
         success = self.run_command(
@@ -160,15 +140,13 @@ class ReproducibilityRunner:
         return success
 
     def step4_vaccination_timing_analysis(self):
-        """Step 4: Run RQ1 vaccination timing analysis (quick version)."""
         self.print_step(4, 6, "RQ1: Vaccination Timing Optimization (Quick Version)")
-
-        print("Note: Running QUICK version to complete within 30 minutes.")
-        print("For full analysis, run: python experiments/rq1_vaccination_timing.py")
+        print("Note: Running short version.")
+        print("For full analysis: python3 experiments/rq1_vaccination_timing.py")
 
         experiment_file = self.project_root / 'experiments' / 'rq1_vaccination_timing_quick.py'
         if not experiment_file.exists():
-            print(f"⚠ Experiment file not found: {experiment_file}")
+            print(f"Experiment file not found: {experiment_file}")
             return True  # Not critical
 
         success = self.run_command(
@@ -185,7 +163,6 @@ class ReproducibilityRunner:
         return success
 
     def step5_generate_report_figures(self):
-        """Step 5: Generate report figures."""
         self.print_step(5, 6, "Report Figure Generation")
 
         experiment_file = self.project_root / 'experiments' / 'generate_report_figures.py'
@@ -207,10 +184,9 @@ class ReproducibilityRunner:
         return success
 
     def step6_collect_results(self):
-        """Step 6: Collect and summarize all results."""
         self.print_step(6, 6, "Collecting Results and Generating Summary")
 
-        # Count files by type
+        # files by type
         file_counts = {
             'PNG images': len([f for f in self.results['files_generated'] if f.endswith('.png')]),
             'JSON data': len([f for f in self.results['files_generated'] if f.endswith('.json')]),
@@ -222,7 +198,7 @@ class ReproducibilityRunner:
         for file_type, count in file_counts.items():
             print(f"  {file_type}: {count}")
 
-        # Save summary
+        # Summary
         self.results['file_counts'] = file_counts
         summary_file = self.project_root / 'results' / 'reproducibility_summary.json'
         summary_file.parent.mkdir(exist_ok=True, parents=True)
@@ -236,7 +212,6 @@ class ReproducibilityRunner:
         return True
 
     def generate_final_report(self):
-        """Generate final reproducibility report."""
         self.print_header("REPRODUCIBILITY RUN COMPLETE")
 
         elapsed_time = time.time() - self.start_time
@@ -254,39 +229,6 @@ class ReproducibilityRunner:
                 print(f"  - {step}")
 
         print("\n" + "="*80)
-        print("KEY OUTPUT LOCATIONS")
-        print("="*80)
-        print("\n1. Mathematical Verification:")
-        print("   results/comprehensive_analysis/")
-        print("   - verification_results.json")
-        print("   - comprehensive_model_comparison.png")
-        print("   - phase_portraits.png")
-        print("   - reff_analysis.png")
-        print("   - metrics_summary.png")
-
-        print("\n2. Configuration-Based Simulations:")
-        print("   results/")
-        print("   - sir_basic_sir.png")
-        print("   - seir_with_interventions_seir.png")
-        print("   - sirs_endemic_sirs.png")
-        print("   - seirv_vaccination_seirv.png")
-        print("   - seir_stochastic_seir.png")
-
-        print("\n3. RQ1 Vaccination Timing Analysis:")
-        print("   results/rq1_vaccination_timing/")
-        print("   - (visualization files)")
-
-        print("\n4. Reproducibility Summary:")
-        print("   results/reproducibility_summary.json")
-
-        print("\n" + "="*80)
-        print("NEXT STEPS")
-        print("="*80)
-        print("\n1. Review RESULTS_REPORT.md for comprehensive analysis")
-        print("2. Check all figures in results/ directories")
-        print("3. For full RQ1 analysis, run: python experiments/rq1_vaccination_timing.py")
-        print("4. All results are now reproducible from source code")
-
         print("\n" + "="*80)
 
         # Return success if no critical failures
@@ -295,7 +237,6 @@ class ReproducibilityRunner:
     def run(self):
         """Execute all reproducibility steps."""
         self.print_header("EPIDEMIC SIMULATOR - REPRODUCIBILITY RUN")
-        print("This script will reproduce all project results in approximately 30 minutes.\n")
         print(f"Project root: {self.project_root}")
         print(f"Python: {sys.executable}")
         print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

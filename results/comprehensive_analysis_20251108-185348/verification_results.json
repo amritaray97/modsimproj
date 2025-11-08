@@ -1,0 +1,65 @@
+{
+  "verification": {
+    "SIR": {
+      "mass_conservation": true,
+      "R0_correct": true,
+      "herd_immunity_correct": true,
+      "final_size_correct": true,
+      "all_passed": true
+    },
+    "SEIR": {
+      "mass_conservation": true,
+      "R0_correct": true,
+      "incubation_correct": true,
+      "all_passed": true
+    },
+    "SIRS": {
+      "mass_conservation": true,
+      "equilibrium_correct": true,
+      "approaches_equilibrium": true,
+      "all_passed": true
+    },
+    "SEIRV": {
+      "mass_conservation": true,
+      "vaccination_reduces_S": true,
+      "vaccination_increases_immunity": true,
+      "all_passed": true
+    }
+  },
+  "metrics": {
+    "SIR": {
+      "Peak Time (days)": "15.4",
+      "Peak Infections (%)": "48.0",
+      "Attack Rate (%)": "99.3",
+      "Final Susceptible (%)": "0.7",
+      "Herd Immunity (%)": "80.0"
+    },
+    "SEIR": {
+      "Peak Time (days)": "30.0",
+      "Peak Infections (%)": "33.8",
+      "Attack Rate (%)": "99.8",
+      "Final Susceptible (%)": "0.2",
+      "Herd Immunity (%)": "83.3"
+    },
+    "SIRS": {
+      "Peak Time (days)": "15.0",
+      "Peak Infections (%)": "48.5",
+      "Attack Rate (%)": "72.7",
+      "Final Susceptible (%)": "20.0"
+    },
+    "SEIRV": {
+      "Peak Time (days)": "29.4",
+      "Peak Infections (%)": "32.6",
+      "Attack Rate (%)": "99.1",
+      "Final Susceptible (%)": "0.0"
+    },
+    "SEIR_intervention": {
+      "Peak Time (days)": "30.0",
+      "Peak Infections (%)": "33.8",
+      "Attack Rate (%)": "97.5",
+      "Final Susceptible (%)": "2.5",
+      "Herd Immunity (%)": "83.3"
+    }
+  },
+  "timestamp": "2025-11-08T17:53:49"
+}

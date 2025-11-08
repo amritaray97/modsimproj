@@ -7,6 +7,7 @@ them with deterministic models.
 
 import sys
 sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+from typing import Optional
 
 
 import matplotlib.pyplot as plt

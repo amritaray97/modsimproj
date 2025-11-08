@@ -79,8 +79,8 @@ class SEIRVModel(CompartmentalModel):
         # Time-dependent vaccination rate
         nu_t = self.vaccination_schedule(t)
 
-        # Ensure vaccination rate doesn't exceed available susceptibles
-        vaccination_flux = min(nu_t * S, S)
+        # Maximum possible vaccination in a timestep
+        vaccination_flux = min(nu_t, 1.0) * S  # Ensure rate doesn't exceed 100%/day
 
         # Derivatives
         dS = -lambda_t * S - vaccination_flux
@@ -139,16 +139,17 @@ class SEIRVModel(CompartmentalModel):
 # This will return the Attack rate as fraction
 
     def calculate_attack_rate(self, results: Optional[dict] = None) -> float:
-        
         if results is None:
             results = self.results
-
-       
-        if 'R' in results and 'I' in results:
-            # This is approximate - exact tracking would require additional state
-            return results['R'][-1] + results['I'][-1]
-
-        return 0.0
+    
+        if 'S' not in results or 'V' not in results:
+            raise ValueError("Results must contain S and V compartments")
+    
+        S_final = results['S'][-1]
+        V_final = results['V'][-1]
+        attack_rate = 1.0 - S_final - V_final
+    
+        return max(0.0, min(1.0, attack_rate))
 
 
 # We calculate number of infections prevented compared to baseline. 
@@ -171,3 +172,21 @@ class SEIRVModel(CompartmentalModel):
         if baseline_attack_rate > 0:
             return 100 * infections_prevented / baseline_attack_rate
         return 0.0
+
+    def calculate_R_effective(self, results: Optional[dict] = None) -> np.ndarray:
+        if results is None:
+            results = self.results
+        
+        if results is None:
+            raise ValueError("No results available. Run simulate() first.")
+        
+        if 'S' not in results or 'V' not in results:
+            raise ValueError("Results must contain S and V compartments")
+        
+        S = results['S']
+        V = results['V']
+        effective_susceptible = S + (1 - self.params.vaccine_efficacy) * V
+        
+        R_eff = self.params.R0 * effective_susceptible
+        
+        return R_eff

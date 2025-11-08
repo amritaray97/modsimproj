@@ -1,7 +1,7 @@
 """
 Basic SIR Model Simulation Example
 
-This script demonstrates a simple SIR epidemic simulation.
+This script demonstrates a simple SIR epidemic simulation to run independently. 
 """
 
 import sys

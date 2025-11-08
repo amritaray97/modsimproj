@@ -149,16 +149,43 @@ class BaseEpidemicModel(ABC):
         peak_idx = np.argmax(results['I'])
         return results['t'][peak_idx], results['I'][peak_idx]
 
+    
     def calculate_attack_rate(self, results: Optional[Dict] = None) -> float:
+    
         if results is None:
             results = self.results
+        
+        if 'S' in results:
+            final_S = results['S'][-1]
+            
+            if 'V' in results:
+                final_V = results['V'][-1]
+                attack_rate = 1.0 - final_S - final_V
+            else:
+                attack_rate = 1.0 - final_S
+            
+            if attack_rate < 0 or attack_rate > 1:
+                raise ValueError(
+                    f"Invalid attack rate {attack_rate:.2%}. "
+                    f"Final S={final_S:.2%}, Final V={results.get('V', [0])[-1]:.2%}"
+                )
 
-        if 'R' in results:
-            return results['R'][-1]
+            print(f"Attack Rate:{attack_rate}")
+            
+            return attack_rate
+        
         elif 'cumulative_infections' in results:
             return results['cumulative_infections'][-1]
+        
+        elif 'R' in results and 'V' not in results:
+            return results['R'][-1]
+        
         else:
-            raise ValueError("Cannot calculate attack rate from results")
+            raise ValueError(
+                "Cannot calculate attack rate: results must contain 'S' compartment, "
+                "'cumulative_infections', or 'R' compartment (for non-vaccination models only)"
+            )
+
 
 
 
@@ -167,17 +194,20 @@ class CompartmentalModel(BaseEpidemicModel):
         super().__init__(params)
 
     def calculate_R0(self) -> float:
-        """Calculate basic reproduction number"""
         if hasattr(self.params, 'R0'):
             return self.params.R0
         return np.nan
+
+# R₀ = βσ/[(γ + μ)(σ + μ)]
+# For SEIR models without demography (μ = 0), this simplifies to:
+# R₀ = β/γ
 
     def calculate_R_effective(self, results: Optional[Dict] = None) -> np.ndarray:
         if results is None:
             results = self.results
 
-        if 'S' in results and hasattr(self.params, 'beta'):
+        if 'S' in results and hasattr(self.params, 'R0'):
             S = results['S']
-            R_eff = self.params.beta * S / self.params.gamma
+            R_eff = self.params.R0 * S  # R_eff = R₀ × S(t)
             return R_eff
         return np.array([])

@@ -55,8 +55,6 @@ def main():
         with open(results_dir / 'phase2_timing_sweep.pkl', 'rb') as f:
             timing_results = pickle.load(f)
             print(" Timing sweep results loaded")
-
-        # Try to load sensitivity (may not exist for quick version)
         try:
             with open(results_dir / 'phase3_sensitivity.pkl', 'rb') as f:
                 sensitivity_results = pickle.load(f)

@@ -14,19 +14,18 @@ For the full analysis, run: rq1_vaccination_timing.py
 import sys
 sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
 
-
+from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+import time
 
 from models.seirv_model import SEIRVModel, SEIRVParameters
 from models.seir_model import SEIRModel
 from core.base_models import SEIRParameters
 
 
-# ============================================================================
-# QUICK CONFIGURATION (Reduced for speed)
-# ============================================================================
+# Quick config because the full one times out.
 
 R0_VALUES = [1.5, 4.0]  # Just two extremes
 GAMMA = 0.1
@@ -36,12 +35,13 @@ VACCINE_EFFICACY_BASE = 0.80
 N_STOCHASTIC_REPLICATES = 5  # Reduced from 30
 T_MAX = 300  # Reduced from 500
 
-OUTPUT_DIR = Path('/home/user/modsimproj/results/rq1_quick')
+timestr = time.strftime("%Y%m%d-%H%M%S")
+
+OUTPUT_DIR = Path(f'/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_quick_{timestr}')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def run_quick_analysis():
-    """Run quick version of the analysis"""
     print("\n" + "="*70)
     print(" "*15 + "RQ1: VACCINATION TIMING (QUICK VERSION)")
     print("="*70)
@@ -91,11 +91,15 @@ def run_quick_analysis():
                 rate=VACCINATION_RATE_BASE
             )
             res = model_vax.simulate(t_span=(0, T_MAX))
+            if 'V' in res:
+                attack_rate = 1.0 - res['S'][-1] - res['V'][-1]
+            else:
+                attack_rate = 1.0 - res['S'][-1]
 
             I_peak_idx = np.argmax(res['I'])
             timing_results.append({
                 't_start': t_start,
-                'attack_rate': res['R'][-1] + res['I'][-1],
+                'attack_rate': attack_rate,
                 'I_peak': res['I'][I_peak_idx]
             })
 
@@ -175,9 +179,11 @@ def run_quick_analysis():
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / 'quick_analysis.png', dpi=300, bbox_inches='tight')
-    print(f"\n✓ Figure saved: {OUTPUT_DIR / 'quick_analysis.png'}")
+    print(f"\n Figure saved: {OUTPUT_DIR / 'quick_analysis.png'}")
 
     # Summary
+    print(f"Attack Rate:{attack_rates}")
+
     print("\n" + "="*70)
     print("SUMMARY")
     print("="*70)
@@ -201,10 +207,6 @@ def run_quick_analysis():
     print(f"Results saved to: {OUTPUT_DIR}")
     print("="*70)
     print("\nFor comprehensive analysis with:")
-    print("  - More R₀ values")
-    print("  - Stochastic simulations")
-    print("  - Parameter sensitivity")
-    print("  - Detailed metrics")
     print("\nRun: python experiments/rq1_vaccination_timing.py")
 
     plt.show()

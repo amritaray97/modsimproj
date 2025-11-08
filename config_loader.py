@@ -11,21 +11,12 @@ from pathlib import Path
 
 
 class ConfigLoader:
-    """Load and validate configuration files for epidemic simulations."""
-
     def __init__(self, config_path: str):
-        """
-        Initialize config loader.
-
-        Args:
-            config_path: Path to JSON configuration file
-        """
         self.config_path = Path(config_path)
         self.config = self._load_config()
         self._validate_config()
 
     def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from JSON file."""
         if not self.config_path.exists():
             raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
 
@@ -33,7 +24,6 @@ class ConfigLoader:
             return json.load(f)
 
     def _validate_config(self):
-        """Validate required fields in configuration."""
         required_fields = ['model', 'parameters', 'initial_conditions', 'simulation']
 
         for field in required_fields:
@@ -46,31 +36,24 @@ class ConfigLoader:
             raise ValueError(f"Invalid model type. Must be one of: {valid_models}")
 
     def get_model_type(self) -> str:
-        """Get the model type."""
         return self.config['model']['type']
 
     def get_parameters(self) -> Dict[str, float]:
-        """Get model parameters."""
         return self.config['parameters']
 
     def get_initial_conditions(self) -> Dict[str, float]:
-        """Get initial conditions."""
         return self.config['initial_conditions']
 
     def get_simulation_settings(self) -> Dict[str, Any]:
-        """Get simulation settings."""
         return self.config['simulation']
 
     def get_interventions(self) -> Optional[list]:
-        """Get intervention settings if present."""
         return self.config.get('interventions', None)
 
     def get_vaccination_settings(self) -> Optional[Dict[str, Any]]:
-        """Get vaccination settings if present."""
         return self.config.get('vaccination', None)
 
     def get_output_settings(self) -> Dict[str, Any]:
-        """Get output settings with defaults."""
         defaults = {
             'save_plots': True,
             'output_dir': 'results',
@@ -84,11 +67,9 @@ class ConfigLoader:
         return defaults
 
     def get_stochastic_settings(self) -> Optional[Dict[str, Any]]:
-        """Get stochastic simulation settings if present."""
         return self.config.get('stochastic', None)
 
     def get_all(self) -> Dict[str, Any]:
-        """Get entire configuration."""
         return self.config
 
 

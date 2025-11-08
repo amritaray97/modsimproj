@@ -30,6 +30,7 @@ With waning immunity, the disease can become endemic with sustained oscillations
 import sys
 sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
 
+from typing import Optional
 
 import numpy as np
 from core.base_models import CompartmentalModel, SIRSParameters
@@ -78,3 +79,17 @@ class SIRSModel(CompartmentalModel):
         R_star = 1 - S_star - I_star
 
         return {'S': S_star, 'I': I_star, 'R': R_star}
+
+
+    def calculate_R_effective(self, results: Optional[dict] = None) -> np.ndarray:
+    
+        if results is None:
+            results = self.results
+        
+        if 'S' not in results:
+            raise ValueError("Results must contain S compartment")
+        
+        S = results['S']
+        R_eff = self.params.R0 * S
+        
+        return R_eff

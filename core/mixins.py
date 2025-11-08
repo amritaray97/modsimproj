@@ -1,5 +1,9 @@
 import numpy as np
 from typing import Dict, Tuple, List
+import sys
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
+from models.seir_model import SEIRModel
 
 """
 Mixin for adding stochasticity to models
@@ -12,8 +16,10 @@ class StochasticMixin:
                  noise_scale: float = 0.01,
                  dt: float = 0.01) -> np.ndarray:
 
-        noise = np.random.normal(0, noise_scale * np.sqrt(dt), len(state)) #  stochastic noise to derivatives
-        noise *= np.sqrt(np.abs(state))  # Scaled by sqrt of compartment size
+        # Demographic noise for each compartment
+        noise = np.random.normal(0, 1, len(state))
+        # Scaled by sqrt of transition rates 
+        noise *= noise_scale * np.sqrt(dt)
         return derivatives + noise
 
     def simulate_stochastic(self,
@@ -85,44 +91,35 @@ class InterventionMixin:
 
         return modifier
 
-    # Modified derivatives for interventions
     def derivatives_with_intervention(self, t: float, y: np.ndarray) -> np.ndarray:
-
-        # Get base derivatives
-        base_derivatives = super().derivatives(t, y)
-
-        # intervention modifier to transmission terms
         modifier = self.get_intervention_modifier(t)
+        original_beta = self.params.beta
+        self.params.beta = original_beta * modifier
+        result = SEIRModel.derivatives(self, t, y) 
+        self.params.beta = original_beta
+        return result
 
-        # This is simplified - in practice would need to identify transmission terms
-        # For SIR/SEIR, transmission affects dS and dI/dE
-        if len(base_derivatives) >= 2:
-            base_derivatives[0] *= modifier  # dS
-            if len(base_derivatives) >= 3:
-                base_derivatives[1] *= modifier  # dE or dI
-
-        return base_derivatives
 
 # Mixin for network-based epidemic models
 class NetworkModelMixin:
    
 
     def set_network(self, network):
-        """Set the contact network"""
         self.network = network
         self.n_nodes = network.number_of_nodes()
 
     def get_infected_neighbors(self, node: int, states: np.ndarray) -> List[int]:
-        """Get infected neighbors of a node"""
         neighbors = list(self.network.neighbors(node))
         return [n for n in neighbors if states[n] == 1]  # 1 = infected state
 
     def calculate_force_of_infection(self, node: int, states: np.ndarray) -> float:
-        """Calculate force of infection for a node"""
         infected_neighbors = self.get_infected_neighbors(node, states)
 
         if not infected_neighbors:
             return 0.0
 
         # Can be modified to include edge weights, node attributes, etc.
-        return self.params.beta * len(infected_neighbors) / self.network.degree(node)
+        # return self.params.beta * len(infected_neighbors) / self.network.degree(node)
+
+        # Per-contact transmission probability
+        return self.params.beta * len(infected_neighbors)

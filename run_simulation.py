@@ -387,7 +387,7 @@ Available configuration templates:
         runner = SimulationRunner(args.config)
         runner.run()
     except Exception as e:
-        print(f"\n❌ Error: {e}", file=sys.stderr)
+        print(f"\n Error: {e}", file=sys.stderr)
         import traceback
         traceback.print_exc()
         sys.exit(1)

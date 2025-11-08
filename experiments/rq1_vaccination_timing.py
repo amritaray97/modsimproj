@@ -16,9 +16,10 @@ Date: 2025
 """
 
 import sys
+import os
 sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
 
-
+from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -26,29 +27,28 @@ import pandas as pd
 from tqdm import tqdm
 import pickle
 from pathlib import Path
+import time
 
 from models.seirv_model import SEIRVModel, SEIRVParameters
 from models.seir_model import SEIRModel
 from core.base_models import SEIRParameters
 
+# CONFIGURATION SET UP
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
-
-# R₀ values to test
+# R₀ values to test, can change for a diff disease or use the json config
 R0_VALUES = [1.5, 2.5, 4.0]
 
 # Base parameters
-GAMMA = 0.1          # Recovery rate (10 day infectious period)
-SIGMA = 0.2          # Incubation rate (5 day incubation period)
+# Recovery rate (10 day infectious period)
+# Incubation rate (5 day incubation period)
+GAMMA = 0.1          
+SIGMA = 0.2        
 
-# Phase 2: Vaccination timing sweep parameters
 VACCINATION_RATE_BASE = 0.01     # 1% of population per day
 VACCINE_EFFICACY_BASE = 0.80     # 80% efficacy
-N_STOCHASTIC_REPLICATES = 30     # Number of stochastic runs per condition
+N_STOCHASTIC_REPLICATES = 30  
 
-# Phase 3: Parameter sensitivity ranges
+# Parameter sensitivity ranges
 EFFICACY_VALUES = [0.5, 0.7, 0.9]
 VACCINATION_RATES = [0.005, 0.01, 0.02]
 
@@ -56,8 +56,12 @@ VACCINATION_RATES = [0.005, 0.01, 0.02]
 T_MAX = 500          # Maximum simulation time
 T_EVAL_POINTS = 2000 # Time points for evaluation
 
+
+
 # Output directory
-OUTPUT_DIR = Path('/home/user/modsimproj/results/rq1_vaccination_timing')
+timestr = time.strftime("%Y%m%d-%H%M%S")
+
+OUTPUT_DIR = Path(f'/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_comprehensive_{timestr}')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -67,7 +71,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def run_phase1_baseline():
     """
-    Phase 1: Characterize SEIR dynamics without vaccination.
+    Phase 1: First we have to characterize SEIR dynamics without vaccination.
 
     For each R₀, measure:
     - Epidemic peak time (t_peak)
@@ -75,7 +79,7 @@ def run_phase1_baseline():
     - Attack rate (R_∞)
     """
     print("\n" + "="*80)
-    print("PHASE 1: BASELINE CHARACTERIZATION (No Vaccination)")
+    print("PHASE 1: BASELINE: No Vaccination")
     print("="*80)
 
     baseline_results = {}
@@ -83,10 +87,10 @@ def run_phase1_baseline():
     for R0 in R0_VALUES:
         print(f"\nRunning baseline for R₀ = {R0}")
 
-        # Calculate beta from R₀ = beta/gamma
+        # beta from R₀ as = beta/gamma
         beta = R0 * GAMMA
 
-        # Create SEIR model (no vaccination)
+        # SEIR model
         params = SEIRParameters(
             beta=beta,
             sigma=SIGMA,
@@ -101,16 +105,13 @@ def run_phase1_baseline():
             R0=0.0
         )
 
-        # Run simulation
         results = model.simulate(t_span=(0, T_MAX))
 
-        # Calculate metrics
         I_peak_idx = np.argmax(results['I'])
         t_peak = results['t'][I_peak_idx]
         I_peak = results['I'][I_peak_idx]
-        attack_rate = results['R'][-1]
+        attack_rate = 1.0 - results['S'][-1]
 
-        # Store results
         baseline_results[R0] = {
             'results': results,
             't_peak': t_peak,
@@ -123,11 +124,9 @@ def run_phase1_baseline():
         print(f"  Peak infections: {I_peak:.2%}")
         print(f"  Attack rate: {attack_rate:.2%}")
 
-    # Save baseline results
     with open(OUTPUT_DIR / 'phase1_baseline.pkl', 'wb') as f:
         pickle.dump(baseline_results, f)
 
-    # Visualization
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
     for idx, R0 in enumerate(R0_VALUES):
@@ -139,7 +138,7 @@ def run_phase1_baseline():
         ax.plot(res['t'], res['I'], 'r-', label='I', linewidth=2)
         ax.plot(res['t'], res['R'], 'g-', label='R', linewidth=2)
 
-        # Mark peak
+        # peak
         ax.axvline(baseline_results[R0]['t_peak'], color='k',
                   linestyle='--', alpha=0.5, label='Peak')
 
@@ -151,21 +150,20 @@ def run_phase1_baseline():
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / 'phase1_baseline_dynamics.png', dpi=300, bbox_inches='tight')
-    print(f"\n✓ Baseline plot saved to {OUTPUT_DIR / 'phase1_baseline_dynamics.png'}")
+    print(f"\n Baseline plot saved to {OUTPUT_DIR / 'phase1_baseline_dynamics.png'}")
 
     return baseline_results
 
 
-# ============================================================================
 # PHASE 2: VACCINATION TIMING SWEEP
-# ============================================================================
+
 
 def run_phase2_timing_sweep(baseline_results):
     """
     Phase 2: Sweep vaccination start times for each R₀.
 
-    Test vaccination starting at different times relative to epidemic peak.
-    Run both deterministic and stochastic simulations.
+    Here we have to now test vaccination starting at different times relative to epidemic peak.
+    We check with both deterministic and stochastic simulations.
     """
     print("\n" + "="*80)
     print("PHASE 2: VACCINATION TIMING SWEEP")
@@ -180,7 +178,7 @@ def run_phase2_timing_sweep(baseline_results):
         t_peak = baseline_results[R0]['t_peak']
         baseline_attack_rate = baseline_results[R0]['attack_rate']
 
-        # Define vaccination start times relative to peak
+        # We define vaccination start times relative to peak
         # From t=0 to 2*t_peak with focus around peak
         t_starts = np.concatenate([
             np.linspace(0, t_peak - 10, 5),          # Before peak
@@ -197,7 +195,6 @@ def run_phase2_timing_sweep(baseline_results):
             'baseline_attack_rate': baseline_attack_rate
         }
 
-        # Run deterministic simulations
         print(f"  Running deterministic timing sweep ({len(t_starts)} conditions)...")
         for t_start in tqdm(t_starts, desc="  Deterministic"):
             result = run_vaccination_simulation(
@@ -210,7 +207,7 @@ def run_phase2_timing_sweep(baseline_results):
             )
             timing_results[R0]['deterministic'].append(result)
 
-        # Run stochastic simulations (subset of time points for speed)
+        # stochastic simulations (subset of time points for speed)
         print(f"  Running stochastic simulations...")
         stochastic_t_starts = t_starts[::2]  # Every other time point
         stochastic_results = []
@@ -235,18 +232,17 @@ def run_phase2_timing_sweep(baseline_results):
 
         timing_results[R0]['stochastic'] = stochastic_results
 
-    # Save timing results
     with open(OUTPUT_DIR / 'phase2_timing_sweep.pkl', 'wb') as f:
         pickle.dump(timing_results, f)
 
-    print("\n✓ Phase 2 complete")
+    print("\nPhase 2 complete")
     return timing_results
 
 
 def run_vaccination_simulation(beta, t_start, duration, vaccination_rate,
                                efficacy, stochastic=False, seed=None):
     """
-    Run a single vaccination simulation.
+    This runs a single vaccination simulation.
 
     Args:
         beta: Transmission rate
@@ -280,7 +276,7 @@ def run_vaccination_simulation(beta, t_start, duration, vaccination_rate,
         V0=0.0
     )
 
-    # Set vaccination campaign
+    # vaccination campaign
     model.set_vaccination_campaign(
         start_time=t_start,
         duration=duration - t_start,  # Vaccinate until end
@@ -288,9 +284,7 @@ def run_vaccination_simulation(beta, t_start, duration, vaccination_rate,
         efficacy=efficacy
     )
 
-    # Run simulation
     if stochastic:
-        # Simple stochastic version - add noise to initial conditions
         S0_stoch = max(0.9, min(0.999, np.random.normal(0.99, 0.01)))
         I0_stoch = 1.0 - S0_stoch
         model.S0 = S0_stoch
@@ -299,16 +293,18 @@ def run_vaccination_simulation(beta, t_start, duration, vaccination_rate,
     else:
         results = model.simulate(t_span=(0, duration))
 
-    # Calculate metrics
+    # metrics
     I_peak_idx = np.argmax(results['I'])
     t_peak = results['t'][I_peak_idx]
     I_peak = results['I'][I_peak_idx]
 
-    # Attack rate: final R (includes both natural recovery and effective vaccination)
-    # For pure infection count, we approximate as final R + final I
-    attack_rate = results['R'][-1] + results['I'][-1]
+    # Attack rate: final R (includes both natural recovery and effective vaccination)    
+    S_final = results['S'][-1]
+    V_final = results['V'][-1]
+    attack_rate = 1.0 - S_final - V_final
+    attack_rate = max(0.0, min(1.0, attack_rate))  
 
-    # Find epidemic duration (when I drops below 0.1% and stays there)
+    # epidemic duration (when I drops below 0.1% and stays there)
     threshold = 0.001
     below_threshold = results['I'] < threshold
     if np.any(below_threshold):
@@ -327,13 +323,11 @@ def run_vaccination_simulation(beta, t_start, duration, vaccination_rate,
     }
 
 
-# ============================================================================
 # PHASE 3: PARAMETER SENSITIVITY
-# ============================================================================
 
 def run_phase3_sensitivity(baseline_results):
     """
-    Phase 3: Test how optimal timing changes with vaccine efficacy and rate.
+    Phase 3: Testing how optimal timing changes with vaccine efficacy and rate.
 
     For each R₀, test combinations of:
     - Vaccine efficacy: 50%, 70%, 90%
@@ -361,7 +355,6 @@ def run_phase3_sensitivity(baseline_results):
             'baseline_attack_rate': baseline_attack_rate
         }
 
-        # Test all combinations
         total_combinations = len(EFFICACY_VALUES) * len(VACCINATION_RATES)
         print(f"  Testing {total_combinations} parameter combinations...")
 
@@ -387,23 +380,22 @@ def run_phase3_sensitivity(baseline_results):
                     'results': results_for_combo
                 })
 
-    # Save sensitivity results
+    # sensitivity results
     with open(OUTPUT_DIR / 'phase3_sensitivity.pkl', 'wb') as f:
         pickle.dump(sensitivity_results, f)
 
-    print("\n✓ Phase 3 complete")
+    print("\nPhase 3 complete")
     return sensitivity_results
 
 
-# ============================================================================
+
 # PHASE 4: ANALYSIS AND VISUALIZATION
-# ============================================================================
 
 def run_phase4_analysis(baseline_results, timing_results, sensitivity_results):
     """
     Phase 4: Comprehensive analysis and visualization.
 
-    Generate:
+    We use these to generate:
     1. Attack rate vs. vaccination start time for each R₀
     2. Optimal timing windows
     3. Benefit quantification
@@ -413,31 +405,26 @@ def run_phase4_analysis(baseline_results, timing_results, sensitivity_results):
     print("PHASE 4: ANALYSIS AND VISUALIZATION")
     print("="*80)
 
-    # ---- Figure 1: Attack Rate vs. Vaccination Timing ----
     print("\n  Creating Figure 1: Attack rate vs. timing...")
     fig1 = create_figure1_attack_rate_vs_timing(baseline_results, timing_results)
     fig1.savefig(OUTPUT_DIR / 'figure1_attack_rate_vs_timing.png',
                 dpi=300, bbox_inches='tight')
 
-    # ---- Figure 2: Peak Infections and Timing ----
     print("  Creating Figure 2: Peak infections vs. timing...")
     fig2 = create_figure2_peak_infections(baseline_results, timing_results)
     fig2.savefig(OUTPUT_DIR / 'figure2_peak_infections_vs_timing.png',
                 dpi=300, bbox_inches='tight')
 
-    # ---- Figure 3: Stochastic Variability ----
     print("  Creating Figure 3: Stochastic variability...")
     fig3 = create_figure3_stochastic_variability(timing_results)
     fig3.savefig(OUTPUT_DIR / 'figure3_stochastic_variability.png',
                 dpi=300, bbox_inches='tight')
 
-    # ---- Figure 4: Parameter Sensitivity ----
     print("  Creating Figure 4: Parameter sensitivity...")
     fig4 = create_figure4_sensitivity(sensitivity_results)
     fig4.savefig(OUTPUT_DIR / 'figure4_parameter_sensitivity.png',
                 dpi=300, bbox_inches='tight')
 
-    # ---- Quantitative Analysis ----
     print("\n  Performing quantitative analysis...")
     analysis_df = create_quantitative_analysis(baseline_results, timing_results,
                                                sensitivity_results)
@@ -451,9 +438,8 @@ def run_phase4_analysis(baseline_results, timing_results, sensitivity_results):
 
     return analysis_df
 
-
+# attack rate vs. vaccination start time for each R₀
 def create_figure1_attack_rate_vs_timing(baseline_results, timing_results):
-    """Create main figure: attack rate vs. vaccination start time for each R₀"""
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
@@ -468,7 +454,7 @@ def create_figure1_attack_rate_vs_timing(baseline_results, timing_results):
 
         attack_rates = [r['attack_rate'] for r in det_results]
 
-        # Plot attack rate vs. start time
+        # attack rate vs. start time
         ax.plot(t_starts, attack_rates, 'o-', color=colors[idx],
                linewidth=2, markersize=6, label='With vaccination')
         ax.axhline(baseline_ar, color='red', linestyle='--', linewidth=2,
@@ -476,7 +462,7 @@ def create_figure1_attack_rate_vs_timing(baseline_results, timing_results):
         ax.axvline(t_peak, color='gray', linestyle=':', linewidth=1.5,
                   alpha=0.7, label=f'Peak (t={t_peak:.0f})')
 
-        # Find optimal timing
+        # optimal timing
         optimal_idx = np.argmin(attack_rates)
         optimal_t = t_starts[optimal_idx]
         optimal_ar = attack_rates[optimal_idx]
@@ -498,9 +484,10 @@ def create_figure1_attack_rate_vs_timing(baseline_results, timing_results):
 
     return fig
 
+# peak infections vs. timing
 
 def create_figure2_peak_infections(baseline_results, timing_results):
-    """Create figure showing peak infections vs. timing"""
+    
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
@@ -534,9 +521,10 @@ def create_figure2_peak_infections(baseline_results, timing_results):
 
     return fig
 
+ # uncertainty bounds from stochastic simulations
 
 def create_figure3_stochastic_variability(timing_results):
-    """Show uncertainty bounds from stochastic simulations"""
+   
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
     for idx, R0 in enumerate(R0_VALUES):
@@ -581,9 +569,10 @@ def create_figure3_stochastic_variability(timing_results):
 
     return fig
 
+# We see how optimal timing depends on efficacy and vaccination rate
 
 def create_figure4_sensitivity(sensitivity_results):
-    """Show how optimal timing depends on efficacy and vaccination rate"""
+    
     fig = plt.figure(figsize=(16, 10))
     gs = GridSpec(3, 3, figure=fig, hspace=0.3, wspace=0.3)
 
@@ -615,7 +604,6 @@ def create_figure4_sensitivity(sensitivity_results):
 
 
 def create_quantitative_analysis(baseline_results, timing_results, sensitivity_results):
-    """Create table of quantitative findings"""
     data = []
 
     for R0 in R0_VALUES:
@@ -626,15 +614,15 @@ def create_quantitative_analysis(baseline_results, timing_results, sensitivity_r
         t_starts = timing_results[R0]['t_starts']
         attack_rates = [r['attack_rate'] for r in det_results]
 
-        # Find optimal timing
+        # optimal timing
         optimal_idx = np.argmin(attack_rates)
         optimal_t = t_starts[optimal_idx]
         optimal_ar = attack_rates[optimal_idx]
 
-        # Calculate benefit
+        # benefit calculation
         percent_reduction = 100 * (baseline_ar - optimal_ar) / baseline_ar
 
-        # Find effective window (times within 5% of optimal)
+        # effective window 
         threshold_ar = optimal_ar * 1.05
         effective_times = t_starts[np.array(attack_rates) <= threshold_ar]
         if len(effective_times) > 0:
@@ -663,13 +651,8 @@ def create_quantitative_analysis(baseline_results, timing_results, sensitivity_r
 # ============================================================================
 
 def main():
-    """Main execution function"""
     print("\n" + "="*80)
     print(" "*15 + "RQ1: VACCINATION TIMING OPTIMIZATION")
-    print("="*80)
-    print("\nResearch Question:")
-    print("How does the timing of vaccination campaigns affect epidemic outcomes")
-    print("across different R₀ regimes?")
     print("\nConfiguration:")
     print(f"  R₀ values: {R0_VALUES}")
     print(f"  Vaccination rate: {VACCINATION_RATE_BASE:.1%}/day")
@@ -687,23 +670,9 @@ def main():
     print(" "*25 + "STUDY COMPLETE!")
     print("="*80)
     print(f"\nAll results saved to: {OUTPUT_DIR}")
-    print("\nKey Findings:")
-    print("  - Check figure1_attack_rate_vs_timing.png for main results")
-    print("  - See quantitative_analysis.csv for numerical summary")
-    print("  - Review all phase*.pkl files for detailed data")
 
     return baseline_results, timing_results, sensitivity_results, analysis_df
 
 
 if __name__ == "__main__":
-    # Check if tqdm is available
-    try:
-        from tqdm import tqdm
-    except ImportError:
-        print("Warning: tqdm not installed. Install with: pip install tqdm")
-        print("Continuing without progress bars...")
-        # Create dummy tqdm
-        def tqdm(iterable, desc="", leave=True):
-            return iterable
-
     main()
