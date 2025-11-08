@@ -1,19 +1,4 @@
 #!/usr/bin/env python3
-"""
-Comprehensive Verification and Visualization Script
-
-This script:
-1. Verifies all mathematical equations against epidemic modeling theory
-2. Runs comprehensive simulations for all models
-3. Generates publication-quality visualizations
-4. Creates detailed comparison plots
-5. Produces a comprehensive results report
-
-Mathematical verification based on:
-- Kermack & McKendrick (1927) - Original SIR model
-- Anderson & May (1991) - Infectious Diseases of Humans
-- Keeling & Rohani (2008) - Modeling Infectious Diseases
-"""
 
 import sys
 sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
@@ -33,9 +18,11 @@ from models.mixin_models import SEIRWithInterventions, SIRWithInterventions
 from analysis.visualization import plot_comparison, plot_phase_portrait, plot_R_effective
 from analysis.metrics import calculate_peak_time, calculate_attack_rate
 
+# class to verify mathematical correctness of epidemic models
+# can be commmented out for no math part
 
 class MathematicalVerifier:
-    """Verify mathematical correctness of epidemic models."""
+    
 
     def __init__(self):
         self.verification_results = {}
@@ -43,14 +30,6 @@ class MathematicalVerifier:
 
     def verify_sir_equations(self):
         """
-        Verify SIR model equations.
-
-        Reference: Kermack & McKendrick (1927)
-        Equations:
-            dS/dt = -β*S*I
-            dI/dt = β*S*I - γ*I
-            dR/dt = γ*I
-
         Properties to verify:
         1. Mass conservation: S + I + R = 1
         2. R0 = β/γ
@@ -85,19 +64,19 @@ class MathematicalVerifier:
         S_final = results['S'][-1]
         final_size_check = np.isclose(R_final, 1 - S_final * np.exp(-R0_calc * R_final), atol=0.01)
 
-        print(f"✓ Mass Conservation: {mass_conservation}")
+        print(f" Mass Conservation: {mass_conservation}")
         print(f"  Total population preserved: {np.allclose(total_pop, 1.0, atol=1e-6)}")
         print(f"  Max deviation: {np.max(np.abs(total_pop - 1.0)):.2e}")
 
-        print(f"\n✓ R0 Calculation: {R0_correct}")
+        print(f"\nR0 Calculation: {R0_correct}")
         print(f"  Calculated: {R0_calc:.2f}")
         print(f"  Expected: {R0_expected:.2f}")
 
-        print(f"\n✓ Herd Immunity Threshold: {herd_immunity_correct}")
+        print(f"\nHerd Immunity Threshold: {herd_immunity_correct}")
         print(f"  Calculated: {herd_immunity:.2%}")
         print(f"  Expected: {herd_immunity_expected:.2%}")
 
-        print(f"\n✓ Final Size Relation: {final_size_check}")
+        print(f"\nFinal Size Relation: {final_size_check}")
         print(f"  R_final: {R_final:.3f}")
         print(f"  S_final: {S_final:.3f}")
 
@@ -113,15 +92,6 @@ class MathematicalVerifier:
 
     def verify_seir_equations(self):
         """
-        Verify SEIR model equations.
-
-        Reference: Anderson & May (1991)
-        Equations:
-            dS/dt = -β*S*I
-            dE/dt = β*S*I - σ*E
-            dI/dt = σ*E - γ*I
-            dR/dt = γ*I
-
         Properties to verify:
         1. Mass conservation: S + E + I + R = 1
         2. R0 = β/γ (same as SIR)
@@ -148,13 +118,13 @@ class MathematicalVerifier:
         incubation_period = 1.0 / params.sigma
         incubation_correct = np.isclose(incubation_period, 5.0)
 
-        print(f"✓ Mass Conservation: {mass_conservation}")
+        print(f"Mass Conservation: {mass_conservation}")
         print(f"  Max deviation: {np.max(np.abs(total_pop - 1.0)):.2e}")
 
-        print(f"\n✓ R0 Calculation: {R0_correct}")
+        print(f"\nR0 Calculation: {R0_correct}")
         print(f"  R0 = β/γ = {R0_calc:.2f}")
 
-        print(f"\n✓ Incubation Period: {incubation_correct}")
+        print(f"\nIncubation Period: {incubation_correct}")
         print(f"  1/σ = {incubation_period:.1f} days")
 
         self.verification_results['SEIR'] = {
@@ -168,14 +138,6 @@ class MathematicalVerifier:
 
     def verify_sirs_equations(self):
         """
-        Verify SIRS model equations.
-
-        Reference: Keeling & Rohani (2008)
-        Equations:
-            dS/dt = -β*S*I + ω*R
-            dI/dt = β*S*I - γ*I
-            dR/dt = γ*I - ω*R
-
         Properties to verify:
         1. Mass conservation: S + I + R = 1
         2. Endemic equilibrium when R0 > 1
@@ -206,16 +168,16 @@ class MathematicalVerifier:
         S_final = results['S'][-1]
         approaches_equilibrium = np.isclose(S_final, equilibrium['S'], rtol=0.1)
 
-        print(f"✓ Mass Conservation: {mass_conservation}")
+        print(f" Mass Conservation: {mass_conservation}")
         print(f"  Max deviation: {np.max(np.abs(total_pop - 1.0)):.2e}")
 
-        print(f"\n✓ Endemic Equilibrium: S* = 1/R0")
+        print(f"\nEndemic Equilibrium: S* = 1/R0")
         print(f"  R0 = {R0:.2f}")
         print(f"  S* calculated: {equilibrium['S']:.3f}")
         print(f"  S* expected (1/R0): {S_star_expected:.3f}")
         print(f"  Match: {S_star_correct}")
 
-        print(f"\n✓ Approaches Equilibrium: {approaches_equilibrium}")
+        print(f"\nApproaches Equilibrium: {approaches_equilibrium}")
         print(f"  S(final) = {S_final:.3f}")
         print(f"  I(final) = {results['I'][-1]:.3f}")
         print(f"  R(final) = {results['R'][-1]:.3f}")
@@ -231,15 +193,6 @@ class MathematicalVerifier:
 
     def verify_seirv_equations(self):
         """
-        Verify SEIRV model with vaccination.
-
-        Equations:
-            dS/dt = -β*S*I - ν(t)*S
-            dE/dt = β*S*I - σ*E
-            dI/dt = σ*E - γ*I
-            dR/dt = γ*I + ε*ν(t)*S
-            dV/dt = (1-ε)*ν(t)*S
-
         Properties to verify:
         1. Mass conservation: S + E + I + R + V = 1
         2. Vaccination reduces effective susceptible population
@@ -270,10 +223,10 @@ class MathematicalVerifier:
         RV_during = (results['R'] + results['V'])[(results['t'] > 20) & (results['t'] < 120)]
         vaccination_increases_immunity = np.mean(RV_during) > np.mean(RV_before)
 
-        print(f"✓ Mass Conservation: {mass_conservation}")
+        print(f" Mass Conservation: {mass_conservation}")
         print(f"  Max deviation: {np.max(np.abs(total_pop - 1.0)):.2e}")
 
-        print(f"\n✓ Vaccination Effects:")
+        print(f"\n Vaccination Effects:")
         print(f"  Reduces susceptible population: {vaccination_reduces_S}")
         print(f"  Increases immune population (R+V): {vaccination_increases_immunity}")
         print(f"  Final R: {results['R'][-1]:.2%}")
@@ -296,15 +249,15 @@ class MathematicalVerifier:
 
         all_passed = True
         for model, results in self.verification_results.items():
-            status = "✓ PASS" if results['all_passed'] else "✗ FAIL"
+            status = "PASS" if results['all_passed'] else "✗ FAIL"
             print(f"{model:10s}: {status}")
             all_passed = all_passed and results['all_passed']
 
         print("\n" + "="*60)
         if all_passed:
-            print("✓ ALL MODELS VERIFIED SUCCESSFULLY")
+            print("ALL MODELS VERIFIED SUCCESSFULLY")
         else:
-            print("✗ SOME MODELS FAILED VERIFICATION")
+            print(" SOME MODELS FAILED VERIFICATION")
         print("="*60)
 
         return all_passed
@@ -314,7 +267,7 @@ class ComprehensiveVisualizer:
 
     def __init__(self):
         self.timestr = time.strftime("%Y%m%d-%H%M%S")
-        self.output_dir = Path(f'results/comprehensive_analysis_{self.timestr}')
+        self.output_dir = Path(f'results/math_verify_{self.timestr}')
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.results_store = {}
 
@@ -360,7 +313,7 @@ class ComprehensiveVisualizer:
         self.results_store['SEIR_intervention'] = seir_int_model.simulate(t_span=(0, 300))
         self.results_store['SEIR_intervention_model'] = seir_int_model
 
-        print("✓ All simulations complete")
+        print("All simulations complete")
 
     def create_model_comparison_figure(self):
         print("\nGenerating model comparison figure...")
@@ -401,7 +354,7 @@ class ComprehensiveVisualizer:
             ax.grid(True, alpha=0.3)
 
         plt.savefig(self.output_dir / 'comprehensive_model_comparison.png', dpi=300, bbox_inches='tight')
-        print(f"✓ Saved: comprehensive_model_comparison.png")
+        print(f"Saved: comprehensive_model_comparison.png")
         plt.close()
 
     def create_phase_portraits(self):
@@ -437,7 +390,7 @@ class ComprehensiveVisualizer:
 
         plt.tight_layout()
         plt.savefig(self.output_dir / 'phase_portraits.png', dpi=300, bbox_inches='tight')
-        print(f"✓ Saved: phase_portraits.png")
+        print(f"Saved: phase_portraits.png")
         plt.close()
 # R_effective analysis for models
     def create_reff_analysis(self):
@@ -474,7 +427,7 @@ class ComprehensiveVisualizer:
 
         plt.tight_layout()
         plt.savefig(self.output_dir / 'reff_analysis.png', dpi=300, bbox_inches='tight')
-        print(f"✓ Saved: reff_analysis.png")
+        print(f"Saved: reff_analysis.png")
         plt.close()
 
     def create_metrics_summary(self):
@@ -534,7 +487,7 @@ class ComprehensiveVisualizer:
 
         plt.title('Model Metrics Comparison', fontsize=14, fontweight='bold', pad=20)
         plt.savefig(self.output_dir / 'metrics_summary.png', dpi=300, bbox_inches='tight')
-        print(f"✓ Saved: metrics_summary.png")
+        print(f"Saved: metrics_summary.png")
         plt.close()
 
         return metrics
@@ -586,20 +539,19 @@ def main():
     with open(visualizer.output_dir / 'verification_results.json', 'w') as f:
         json.dump(output_data, f, indent=2)
 
-    print(f"\n✓ Results saved to: {visualizer.output_dir}")
-    print(f"✓ Verification data: verification_results.json")
-    print(f"✓ Figures generated: 4 comprehensive visualizations")
+    print(f"\n Results saved to: {visualizer.output_dir}")
+    print(f" Verification data: verification_results.json")
 
     print("\n" + "="*60)
     print("ANALYSIS COMPLETE")
     print("="*60)
 
     if all_verified:
-        print("\n✓ All mathematical models verified successfully!")
-        print("✓ All visualizations generated successfully!")
+        print("\n All mathematical models verified successfully!")
+        print(" All visualizations generated successfully!")
         print(f"\nView results in: {visualizer.output_dir}/")
     else:
-        print("\n⚠ Some verification checks failed. Please review.")
+        print("\n Some verification checks failed. Please review.")
 
     return all_verified
 

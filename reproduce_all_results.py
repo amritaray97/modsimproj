@@ -64,17 +64,32 @@ class ReproducibilityRunner:
             print(f"{description} encountered error: {e}")
             return False
 
+    
+    # Math checker to verify mathematical validity of the results
+    # Can be commmented out later, this is more for debugging
+
     def step1_mathematical_verification(self):
-        """Step 1: Run mathematical verification of all models."""
         self.print_step(1, 6, "Mathematical Verification & Comprehensive Visualization")
 
+        # For both math checker and visualizer:
         success = self.run_command(
             [sys.executable, 'verify_and_visualize.py'],
             "Mathematical verification"
         )
+        
+        # For only math checker:
+        # success = self.run_command(
+        #    [sys.executable, 'math_verify.py'],
+        #    "Math Checker"
+        #)
+        
+        # For only visualization:
+        #success = self.run_command(
+        #    [sys.executable, 'comprehensive_visualize.py'],
+        #    "Comprehensive Visualization"
+        #)
 
         if success:
-            # Track generated files
             output_dir = self.project_root / 'results' / 'comprehensive_analysis'
             if output_dir.exists():
                 for file in output_dir.glob('*'):
@@ -83,7 +98,6 @@ class ReproducibilityRunner:
         return success
 
     def step2_basic_simulations(self):
-        """Step 2: Run all configuration-based simulations."""
         self.print_step(2, 6, "Configuration-Based Simulations")
 
         configs = [
