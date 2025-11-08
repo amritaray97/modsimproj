@@ -14,7 +14,18 @@ The compartments are defined as:
         dS/dt = -beta * S * I
         dI/dt = beta * S * I - gamma * I
         dR/dt = gamma * I
+
+Here we calculate the derivatives for the SIR model.
+
+        Args:
+            t: Current time
+            y: Current state [S, I, R]
+
+        Returns:
+            Array of derivatives [dS/dt, dI/dt, dR/dt]
 """
+import sys
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
 
 import numpy as np
 from core.base_models import CompartmentalModel, SIRParameters
@@ -29,16 +40,6 @@ class SIRModel(CompartmentalModel):
         self.I0 = I0
         self.R0 = R0
 
-"""
-        Here we calculate the derivatives for the SIR model.
-
-        Args:
-            t: Current time
-            y: Current state [S, I, R]
-
-        Returns:
-            Array of derivatives [dS/dt, dI/dt, dR/dt]
-"""
     def derivatives(self, t: float, y: np.ndarray) -> np.ndarray:
         
         S, I, R = y
@@ -55,12 +56,9 @@ class SIRModel(CompartmentalModel):
 
     def get_initial_conditions(self) -> np.ndarray:
         return np.array([self.S0, self.I0, self.R0])
-"""
-        Calculation of the herd immunity threshold.
 
-        Returns:
-            The fraction of population that needs to be immune
-"""
+# We Calculation of the herd immunity threshold. This Returns: The fraction of population that needs to be immune
+
     def calculate_herd_immunity_threshold(self) -> float:
         
         R0 = self.calculate_R0()

@@ -5,8 +5,8 @@ This script compares SIR, SEIR, and SIRS models.
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
-
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+import time
 import matplotlib.pyplot as plt
 from core.base_models import SIRParameters, SEIRParameters, SIRSParameters
 from models.sir_model import SIRModel
@@ -18,7 +18,7 @@ def main():
     # Common parameters
     beta = 0.5
     gamma = 0.1
-
+    timestr = time.strftime("%Y%m%d-%H%M%S")
     print("Comparing SIR, SEIR, and SIRS Models")
     print("=" * 60)
     print()
@@ -135,8 +135,8 @@ def main():
     ax7.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('/home/user/modsimproj/results/model_comparison.png', dpi=300)
-    print("Plot saved to: results/model_comparison.png")
+    plt.savefig(f'/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/model_comparison_{timestr}.png', dpi=300)
+    print(f"Plot saved to: results/model_comparison_{timestr}.png")
     plt.show()
 
 

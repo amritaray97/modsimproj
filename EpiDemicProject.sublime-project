@@ -22,7 +22,12 @@
                 },
 		{
                         "path": "configs"
-                }
+                },
+		{
+			"path": ".",
+			"file_include_patterns": ["*.py"],
+			"folder_include_patterns": ["none"],
+		}
 
         ],
 }

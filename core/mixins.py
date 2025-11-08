@@ -1,7 +1,6 @@
 import numpy as np
 from typing import Dict, Tuple, List
 
-
 """
 Mixin for adding stochasticity to models
 """
@@ -51,9 +50,8 @@ class StochasticMixin:
         return results
 
 
-"""
-Mixin for adding intervention capabilities
-"""
+# Mixin for adding intervention capabilities
+
 class InterventionMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -105,9 +103,9 @@ class InterventionMixin:
 
         return base_derivatives
 
-
+# Mixin for network-based epidemic models
 class NetworkModelMixin:
-    """Mixin for network-based epidemic models"""
+   
 
     def set_network(self, network):
         """Set the contact network"""

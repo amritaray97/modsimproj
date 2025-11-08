@@ -1,24 +1,17 @@
 """
-Generate All Report Figures for RQ1 Research
+Generate All Report Figures for RQ1
 
-This script loads RQ1 results and generates a comprehensive set of
-publication-quality figures for your report.
-
-Usage:
-    python experiments/generate_report_figures.py
-
-Output:
-    All figures saved to results/rq1_vaccination_timing/report_figures/
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import pickle
 from pathlib import Path
 import matplotlib.pyplot as plt
+import time
 
-# Import our visualization functions
 from analysis.rq1_visualizations import (
     create_comprehensive_timing_analysis,
     create_baseline_comparison_panel,
@@ -31,52 +24,51 @@ from analysis.rq1_visualizations import (
 
 
 def main():
-    """Generate all report figures from saved RQ1 results."""
+# figures from saved RQ1 results.
 
     print("\n" + "="*80)
     print(" "*20 + "RQ1 REPORT FIGURE GENERATION")
     print("="*80)
-
-    # Set paths
-    results_dir = Path('/home/user/modsimproj/results/rq1_vaccination_timing')
-    output_dir = results_dir / 'report_figures'
-    output_dir.mkdir(parents=True, exist_ok=True)
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    results_dir = Path('/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_vaccination_timing')
+    output_dir = f'{results_dir}/report_figures_{timestr}'
+    # results_dir.append{'/report_figures_{timestr}'}
+    # output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"\nInput directory: {results_dir}")
     print(f"Output directory: {output_dir}")
 
-    # Check if results exist
+    # if results exist
     if not results_dir.exists():
-        print("\n❌ ERROR: RQ1 results not found!")
+        print("\n ERROR: RQ1 results not found!")
         print("Please run one of these first:")
         print("  - python experiments/rq1_vaccination_timing.py")
         print("  - python experiments/rq1_vaccination_timing_quick.py")
         return
 
-    # Load results
     print("\nLoading results...")
     try:
         with open(results_dir / 'phase1_baseline.pkl', 'rb') as f:
             baseline_results = pickle.load(f)
-            print("  ✓ Baseline results loaded")
+            print(" Baseline results loaded")
 
         with open(results_dir / 'phase2_timing_sweep.pkl', 'rb') as f:
             timing_results = pickle.load(f)
-            print("  ✓ Timing sweep results loaded")
+            print(" Timing sweep results loaded")
 
         # Try to load sensitivity (may not exist for quick version)
         try:
             with open(results_dir / 'phase3_sensitivity.pkl', 'rb') as f:
                 sensitivity_results = pickle.load(f)
                 has_sensitivity = True
-                print("  ✓ Sensitivity results loaded")
+                print(" Sensitivity results loaded")
         except FileNotFoundError:
             sensitivity_results = None
             has_sensitivity = False
-            print("  ⚠ Sensitivity results not found (using quick version data)")
+            print(" Sensitivity results not found (using quick version data)")
 
     except Exception as e:
-        print(f"\n❌ ERROR loading results: {e}")
+        print(f"\n ERROR loading results: {e}")
         return
 
     R0_VALUES = list(baseline_results.keys())
@@ -99,7 +91,7 @@ def main():
         figures_generated.append('Figure 1: Comprehensive Timing Analysis')
         plt.close()
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Figure 2: Baseline Comparison
     print("\n[2/7] Creating baseline comparison panel...")
@@ -111,7 +103,7 @@ def main():
         figures_generated.append('Figure 2: Baseline Epidemic Dynamics')
         plt.close()
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Figure 3: Stochastic Analysis
     print("\n[3/7] Creating stochastic variability analysis...")
@@ -127,7 +119,7 @@ def main():
         else:
             print("  ⚠ No stochastic data available (quick version)")
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Figure 4: Sensitivity Heatmaps
     if has_sensitivity and sensitivity_results is not None:
@@ -140,7 +132,7 @@ def main():
             figures_generated.append('Figure 4: Parameter Sensitivity Heatmaps')
             plt.close()
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f" Error: {e}")
     else:
         print("\n[4/7] Skipping sensitivity heatmaps (not available)")
 
@@ -154,7 +146,7 @@ def main():
         figures_generated.append('Figure 5: Vaccination Benefit Analysis')
         plt.close()
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Figure 6: Timing Window Analysis
     print("\n[6/7] Creating timing window analysis...")
@@ -166,7 +158,7 @@ def main():
         figures_generated.append('Figure 6: Optimal Timing Windows')
         plt.close()
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Figure 7: Vaccination Dynamics Examples
     print("\n[7/7] Creating vaccination dynamics examples...")
@@ -178,7 +170,7 @@ def main():
         figures_generated.append('Figure 7: Vaccination Dynamics Examples')
         plt.close()
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"Error: {e}")
 
     # Summary
     print("\n" + "="*80)
@@ -190,7 +182,7 @@ def main():
 
     print(f"\n📁 All figures saved to: {output_dir}")
 
-    # Create index file
+    # index files
     print("\nCreating figure index...")
     index_path = output_dir / 'FIGURE_INDEX.txt'
     with open(index_path, 'w') as f:

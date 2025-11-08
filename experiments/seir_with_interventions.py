@@ -6,7 +6,8 @@ and social distancing in an SEIR epidemic model.
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import matplotlib.pyplot as plt
 from core.base_models import SEIRParameters

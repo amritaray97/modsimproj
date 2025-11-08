@@ -4,14 +4,14 @@ from abc import ABC, abstractmethod
 from typing import Dict, Tuple, Optional
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
+"""
+Base parameters class
+"""
 
-
-"""Base parameters class"""
 @dataclass
 class ModelParameters:
     population: float = 1.0
 
-"""SIR model parameters"""
 @dataclass
 class SIRParameters(ModelParameters):
     beta: float = 0.5
@@ -24,7 +24,6 @@ class SIRParameters(ModelParameters):
 
 @dataclass
 class SEIRParameters(SIRParameters):
-    """SEIR model parameters"""
     sigma: float = 0.2
 
     @property
@@ -36,7 +35,15 @@ class SIRSParameters(SIRParameters):
     omega: float = 0.01  # Waning immunity rate
 
 
-"""Abstract base class for all epidemic models"""
+"""
+Abstract base class for all epidemic models
+For init conditions:
+initial_conditions: Initial state values
+t_span: Time span for simulation
+t_eval: Times at which to evaluate solution
+method: Integration method
+
+"""
 class BaseEpidemicModel(ABC):
     def __init__(self, params: ModelParameters):
         self.params = params
@@ -45,16 +52,9 @@ class BaseEpidemicModel(ABC):
 
     @abstractmethod
     def derivatives(self, t: float, y: np.ndarray, *args) -> np.ndarray:
-        """Calculate derivatives - must be implemented by subclasses"""
         pass
 
-    """
-    Args:
-            initial_conditions: Initial state values
-            t_span: Time span for simulation
-            t_eval: Times at which to evaluate solution
-            method: Integration method
-    """
+    
     @abstractmethod
     def get_initial_conditions(self) -> np.ndarray:
         pass
@@ -99,7 +99,7 @@ class BaseEpidemicModel(ABC):
         if ax is None:
             fig, ax = plt.subplots(figsize=(10, 6))
 
-        # Default colors for common compartments
+        # colors for compartments
         default_colors = {
             'S': 'blue',
             'E': 'yellow',
@@ -127,7 +127,6 @@ class BaseEpidemicModel(ABC):
         return ax
 
     def _get_label(self, compartment: str) -> str:
-        """Get human-readable label for compartment"""
         labels = {
             'S': 'Susceptible',
             'E': 'Exposed',

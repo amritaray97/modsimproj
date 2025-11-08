@@ -17,7 +17,12 @@ Parameters:
         gamma: recovery rate
         vaccine_efficacy: fraction of vaccinated who become immune (0-1)
         vaccination_rate: base vaccination rate (fraction per day)
+
+In the set_vaccination_campaign func, we set up a time-limited vaccination campaign.
 """
+import sys
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import numpy as np
 from core.base_models import CompartmentalModel, SEIRParameters
@@ -90,15 +95,11 @@ class SEIRVModel(CompartmentalModel):
         
         return np.array([self.S0, self.E0, self.I0, self.R0, self.V0]) #Return initial conditions [S0, E0, I0, R0, V0]
 
-"""
-        Here, we set up a time-limited vaccination campaign.
-
-        Args:
-            start_time: When vaccination starts
-            duration: How long vaccination continues
-            rate: Vaccination rate (fraction per day) during campaign
-            efficacy: Vaccine efficacy (if None, uses params.vaccine_efficacy)
-"""
+    
+# start_time: When vaccination starts
+# duration: How long vaccination continues
+# rate: Vaccination rate (fraction per day) during campaign
+# efficacy: Vaccine efficacy (if None, uses params.vaccine_efficacy)
 
     def set_vaccination_campaign(self,
                                 start_time: float,
@@ -117,15 +118,9 @@ class SEIRVModel(CompartmentalModel):
         self.vaccination_schedule = campaign_schedule
 
 
-"""
-        We now calculate total number vaccinated (both effective and ineffective).
 
-        Args:
-            results: Simulation results
-
-        Returns:
-            Total fraction vaccinated
-"""
+# We now calculate total number vaccinated (both effective and ineffective).
+# This will return the total fraction of the population vaccinated
     def calculate_total_vaccinated(self, results: Optional[dict] = None) -> float:
 
         if results is None:
@@ -139,15 +134,9 @@ class SEIRVModel(CompartmentalModel):
 
         return 0.0
 
-"""
-        We calculate attack rate (total infections, excluding vaccine-prevented).
 
-        Args:
-            results: Simulation results
-
-        Returns:
-            Attack rate as fraction
-        """
+# We calculate attack rate (total infections, excluding vaccine-prevented).
+# This will return the Attack rate as fraction
 
     def calculate_attack_rate(self, results: Optional[dict] = None) -> float:
         
@@ -161,16 +150,11 @@ class SEIRVModel(CompartmentalModel):
 
         return 0.0
 
-"""
-We calculate number of infections prevented compared to baseline.
 
-Args:
-    baseline_attack_rate: Attack rate without vaccination
-    results: Simulation results with vaccination
+# We calculate number of infections prevented compared to baseline. 
+# The baseline_attack_rate is defined as Attack rate without vaccination
+# The results will give us the fraction of infections prevented
 
-Returns:
-    Fraction of infections prevented
-"""
     def calculate_infections_prevented(self, baseline_attack_rate: float,
                                       results: Optional[dict] = None) -> float:
         
@@ -178,16 +162,9 @@ Returns:
         return baseline_attack_rate - vaccinated_attack_rate
 
 
-"""
-We calculate percent reduction in infections.
 
-    Args:
-        baseline_attack_rate: Attack rate without vaccination
-        results: Simulation results with vaccination
+# We calculate percent reduction in infections. This gives us the percent reduction (0-100)
 
-    Returns:
-        Percent reduction (0-100)
-"""
     def calculate_percent_reduction(self, baseline_attack_rate: float,
                                    results: Optional[dict] = None) -> float:
         infections_prevented = self.calculate_infections_prevented(baseline_attack_rate, results)

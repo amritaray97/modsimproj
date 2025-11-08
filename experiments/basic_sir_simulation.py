@@ -5,7 +5,8 @@ This script demonstrates a simple SIR epidemic simulation.
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import matplotlib.pyplot as plt
 from core.base_models import SIRParameters
@@ -13,7 +14,6 @@ from models.sir_model import SIRModel
 
 
 def main():
-    # Set up parameters
     params = SIRParameters(
         population=1.0,
         beta=0.5,      # Transmission rate
@@ -26,7 +26,6 @@ def main():
     print(f"  R0 (basic reproduction number): {params.R0:.2f}")
     print()
 
-    # Create model with initial conditions
     model = SIRModel(
         params=params,
         S0=0.99,  # 99% susceptible
@@ -34,11 +33,9 @@ def main():
         R0=0.0    # 0% recovered
     )
 
-    # Run simulation
     print("Running simulation...")
     results = model.simulate(t_span=(0, 200))
 
-    # Calculate key metrics
     peak_time, peak_infections = model.calculate_peak_infection(results)
     attack_rate = model.calculate_attack_rate(results)
     herd_immunity = model.calculate_herd_immunity_threshold()
@@ -48,7 +45,6 @@ def main():
     print(f"  Attack rate (total infected): {attack_rate:.1%}")
     print(f"  Herd immunity threshold: {herd_immunity:.1%}")
 
-    # Plot results
     fig, ax = plt.subplots(figsize=(10, 6))
     model.plot_dynamics(results=results, ax=ax)
     plt.tight_layout()

@@ -16,7 +16,19 @@ Equations:
         dE/dt = beta * S * I - sigma * E
         dI/dt = sigma * E - gamma * I
         dR/dt = gamma * I
+
+For derivative calculation:
+
+    Args:
+            t: Current time
+            y: Current state [S, E, I, R]
+
+    Returns:
+            Array of derivatives [dS/dt, dE/dt, dI/dt, dR/dt]
 """
+import sys
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import numpy as np
 from core.base_models import CompartmentalModel, SEIRParameters
@@ -32,17 +44,6 @@ class SEIRModel(CompartmentalModel):
         self.I0 = I0
         self.R0 = R0
 
-
-"""
-We now calculate the derivatives for the SEIR model.
-
-    Args:
-            t: Current time
-            y: Current state [S, E, I, R]
-
-    Returns:
-            Array of derivatives [dS/dt, dE/dt, dI/dt, dR/dt]
-"""
     def derivatives(self, t: float, y: np.ndarray) -> np.ndarray:
         
         S, E, I, R = y
@@ -61,12 +62,10 @@ We now calculate the derivatives for the SEIR model.
     def get_initial_conditions(self) -> np.ndarray:
         return np.array([self.S0, self.E0, self.I0, self.R0])
 
-"""
-Here we calculate the herd immunity threshold.
+# Here we calculate the herd immunity threshold.
 
-Returns:
-        The fraction of population that needs to be immune
-"""
+# This Returns: The fraction of population that needs to be immune
+
     def calculate_herd_immunity_threshold(self) -> float:
         
         R0 = self.calculate_R0()

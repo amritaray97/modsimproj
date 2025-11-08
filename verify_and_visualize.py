@@ -16,12 +16,13 @@ Mathematical verification based on:
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
 
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import json
+import time
 
 from core.base_models import SIRParameters, SEIRParameters, SIRSParameters
 from models.sir_model import SIRModel
@@ -38,6 +39,7 @@ class MathematicalVerifier:
 
     def __init__(self):
         self.verification_results = {}
+        self.timestr = time.strftime("%Y%m%d-%H%M%S")
 
     def verify_sir_equations(self):
         """
@@ -288,7 +290,6 @@ class MathematicalVerifier:
         return results
 
     def generate_summary(self):
-        """Generate verification summary."""
         print("\n" + "="*60)
         print("MATHEMATICAL VERIFICATION SUMMARY")
         print("="*60)
@@ -310,15 +311,14 @@ class MathematicalVerifier:
 
 
 class ComprehensiveVisualizer:
-    """Generate comprehensive visualizations for all models."""
 
-    def __init__(self, output_dir='results/comprehensive_analysis'):
-        self.output_dir = Path(output_dir)
+    def __init__(self):
+        self.timestr = time.strftime("%Y%m%d-%H%M%S")
+        self.output_dir = Path(f'results/comprehensive_analysis_{self.timestr}')
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.results_store = {}
 
     def run_all_simulations(self):
-        """Run all model simulations."""
         print("\n" + "="*60)
         print("Running Comprehensive Simulations")
         print("="*60)
@@ -363,13 +363,12 @@ class ComprehensiveVisualizer:
         print("✓ All simulations complete")
 
     def create_model_comparison_figure(self):
-        """Create comprehensive model comparison figure."""
         print("\nGenerating model comparison figure...")
 
         fig = plt.figure(figsize=(16, 10))
         gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
 
-        # Plot infectious compartments for all models
+        # infectious compartments for all models
         ax1 = fig.add_subplot(gs[0, :])
         models_to_compare = ['SIR', 'SEIR', 'SIRS', 'SEIRV', 'SEIR_intervention']
         colors = ['blue', 'red', 'green', 'purple', 'orange']
@@ -406,7 +405,6 @@ class ComprehensiveVisualizer:
         plt.close()
 
     def create_phase_portraits(self):
-        """Create phase portraits for all models."""
         print("\nGenerating phase portraits...")
 
         fig, axes = plt.subplots(2, 2, figsize=(14, 12))
@@ -421,12 +419,10 @@ class ComprehensiveVisualizer:
             x = results[x_comp]
             y = results[y_comp]
 
-            # Plot trajectory
             ax.plot(x, y, 'b-', linewidth=2, alpha=0.7)
             ax.plot(x[0], y[0], 'go', markersize=12, label='Start')
             ax.plot(x[-1], y[-1], 'ro', markersize=12, label='End')
 
-            # Add arrows to show direction
             n_arrows = 10
             arrow_indices = np.linspace(0, len(x)-1, n_arrows, dtype=int)
             for i in arrow_indices[:-1]:
@@ -443,9 +439,9 @@ class ComprehensiveVisualizer:
         plt.savefig(self.output_dir / 'phase_portraits.png', dpi=300, bbox_inches='tight')
         print(f"✓ Saved: phase_portraits.png")
         plt.close()
-
+# R_effective analysis for models
     def create_reff_analysis(self):
-        """Create R_effective analysis for models."""
+        
         print("\nGenerating R_effective analysis...")
 
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -482,7 +478,6 @@ class ComprehensiveVisualizer:
         plt.close()
 
     def create_metrics_summary(self):
-        """Create summary of key metrics."""
         print("\nGenerating metrics summary...")
 
         metrics = {}
@@ -503,7 +498,7 @@ class ComprehensiveVisualizer:
                 herd = model_obj.calculate_herd_immunity_threshold()
                 metrics[model]['Herd Immunity (%)'] = f"{herd*100:.1f}"
 
-        # Create table visualization
+        # table visualization
         fig, ax = plt.subplots(figsize=(12, 6))
         ax.axis('tight')
         ax.axis('off')
@@ -527,12 +522,11 @@ class ComprehensiveVisualizer:
         table.set_fontsize(10)
         table.scale(1, 2)
 
-        # Style header
+        
         for i in range(len(col_labels)):
             table[(0, i)].set_facecolor('#4CAF50')
             table[(0, i)].set_text_props(weight='bold', color='white')
 
-        # Alternate row colors
         for i in range(1, len(row_labels) + 1):
             for j in range(len(col_labels)):
                 if i % 2 == 0:
@@ -547,12 +541,11 @@ class ComprehensiveVisualizer:
 
 
 def main():
-    """Main execution."""
     print("\n" + "="*60)
     print("COMPREHENSIVE VERIFICATION AND VISUALIZATION")
     print("="*60)
 
-    # Step 1: Mathematical Verification
+    #  Mathematical Verification
     print("\nSTEP 1: Mathematical Verification")
     print("-" * 60)
     verifier = MathematicalVerifier()
@@ -562,7 +555,7 @@ def main():
     verifier.verify_seirv_equations()
     all_verified = verifier.generate_summary()
 
-    # Step 2: Comprehensive Visualizations
+    # Comprehensive Visualizations
     print("\nSTEP 2: Comprehensive Visualizations")
     print("-" * 60)
     visualizer = ComprehensiveVisualizer()
@@ -572,11 +565,11 @@ def main():
     visualizer.create_reff_analysis()
     metrics = visualizer.create_metrics_summary()
 
-    # Step 3: Save verification results
+    #  Save verification results
     print("\nSTEP 3: Saving Results")
     print("-" * 60)
 
-    # Convert numpy bools to Python bools for JSON serialization
+    # Conversion for numpy bools to Python bools for JSON serialization
     def convert_bools(obj):
         if isinstance(obj, dict):
             return {k: convert_bools(v) for k, v in obj.items()}

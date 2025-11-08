@@ -6,16 +6,16 @@ them with deterministic models.
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import matplotlib.pyplot as plt
 import numpy as np
-from core.base_models import SIRParameters
-from models.mixin_models import StochasticSIR
+from modsimproj.core.base_models import SIRParameters
+from modsimproj.models.mixin_models import StochasticSIR
 
 
 def main():
-    # Set up parameters
     params = SIRParameters(
         population=1.0,
         beta=0.5,
@@ -30,7 +30,6 @@ def main():
     print(f"  R0: {params.R0:.2f}")
     print()
 
-    # Create model
     model = StochasticSIR(
         params=params,
         S0=0.99,
@@ -38,11 +37,10 @@ def main():
         R0=0.0
     )
 
-    # Run deterministic simulation
     print("Running deterministic simulation...")
     det_results = model.simulate(t_span=(0, 200))
 
-    # Run multiple stochastic simulations
+    # multiple stochastic simulations
     n_simulations = 10
     print(f"Running {n_simulations} stochastic simulations...")
     stoch_results = []
@@ -62,7 +60,6 @@ def main():
 
     print("\nSimulations complete!")
 
-    # Plot results
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
     # Susceptible
@@ -130,7 +127,7 @@ def main():
     plt.savefig('/home/user/modsimproj/results/stochastic_comparison.png', dpi=300)
     print("\nPlot saved to: results/stochastic_comparison.png")
 
-    # Print statistics
+    # statistics
     print("\nStatistics:")
     print(f"Deterministic peak: {det_peak_infection:.2%} at day {det_peak_time:.1f}")
     print(f"Stochastic peaks:")

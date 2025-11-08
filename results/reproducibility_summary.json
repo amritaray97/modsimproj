@@ -1,0 +1,35 @@
+{
+  "start_time": "2025-11-08T15:50:14.263416",
+  "steps_completed": [
+    "Mathematical verification",
+    "Simulation: sir_basic",
+    "Simulation: seir_with_interventions",
+    "Simulation: sirs_endemic",
+    "Simulation: seirv_vaccination",
+    "Simulation: seir_stochastic",
+    "Report figure generation"
+  ],
+  "steps_failed": [
+    "Model comparison",
+    "RQ1 vaccination timing (quick)"
+  ],
+  "files_generated": [
+    "results/comprehensive_analysis/phase_portraits.png",
+    "results/comprehensive_analysis/reff_analysis.png",
+    "results/comprehensive_analysis/verification_results.json",
+    "results/comprehensive_analysis/comprehensive_model_comparison.png",
+    "results/comprehensive_analysis/metrics_summary.png",
+    "results/sir_basic_sir.png",
+    "results/seir_with_interventions_seir.png",
+    "results/sirs_endemic_sirs.png",
+    "results/seirv_vaccination_seirv.png",
+    "results/seir_stochastic_seir.png"
+  ],
+  "total_runtime": null,
+  "file_counts": {
+    "PNG images": 9,
+    "JSON data": 1,
+    "PKL data": 0,
+    "CSV data": 0
+  }
+}

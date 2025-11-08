@@ -16,7 +16,8 @@ Date: 2025
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+sys.path.insert(0, '/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj')
+
 
 import numpy as np
 import matplotlib.pyplot as plt
