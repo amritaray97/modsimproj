@@ -96,6 +96,194 @@ python run_simulation.py --config configs/seir_stochastic.json
 
 See `configs/README.md` for detailed configuration documentation.
 
+## Running Scripts
+
+This section provides instructions for running all major scripts in the project.
+
+### 1. Reproducibility Script
+
+The reproducibility script runs ALL project experiments and generates all results in approximately 20-30 minutes.
+
+```bash
+# Run all experiments and generate all results
+python reproduce_all_results.py
+```
+
+**What it does:**
+- Runs mathematical verification of all models
+- Executes all configuration-based simulations
+- Generates model comparison figures
+- Runs RQ1 vaccination timing analysis (quick version)
+- Creates all report figures
+- Produces a summary report
+
+**Outputs:**
+- `results/comprehensive_analysis/` - Verification results and visualizations
+- `results/` - All simulation plots
+- `results/rq1_vaccination_timing/` - Research analysis results
+- `results/reproducibility_summary.json` - Complete run summary
+
+**Runtime:** ~20-30 minutes (depending on system)
+
+### 2. Verification Script
+
+The verification script validates mathematical correctness and generates comprehensive visualizations.
+
+```bash
+# Verify all models and create visualizations
+python verify_and_visualize.py
+```
+
+**What it does:**
+- Verifies SIR, SEIR, SIRS, and SEIRV model equations
+- Checks mass conservation, R₀ calculations, and equilibrium states
+- Generates publication-quality visualizations:
+  - Model comparison plots
+  - Phase portraits for all models
+  - R_effective analysis
+  - Metrics summary table
+
+**Outputs:**
+- `results/comprehensive_analysis/verification_results.json` - Verification data
+- `results/comprehensive_analysis/comprehensive_model_comparison.png`
+- `results/comprehensive_analysis/phase_portraits.png`
+- `results/comprehensive_analysis/reff_analysis.png`
+- `results/comprehensive_analysis/metrics_summary.png`
+
+**Runtime:** ~2-5 minutes
+
+### 3. JSON Configuration-Based Simulations
+
+Run individual simulations using JSON configuration files.
+
+```bash
+# Run a specific simulation configuration
+python run_simulation.py --config configs/sir_basic.json
+
+# Run SEIR with interventions
+python run_simulation.py --config configs/seir_with_interventions.json
+
+# Run SEIRV with vaccination
+python run_simulation.py --config configs/seirv_vaccination.json
+
+# Run stochastic simulation
+python run_simulation.py --config configs/seir_stochastic.json
+
+# Run SIRS endemic model
+python run_simulation.py --config configs/sirs_endemic.json
+```
+
+**Available configurations:**
+- `configs/sir_basic.json` - Basic SIR model (R₀=5.0)
+- `configs/seir_with_interventions.json` - SEIR with lockdown intervention
+- `configs/sirs_endemic.json` - SIRS with waning immunity
+- `configs/seirv_vaccination.json` - SEIRV with vaccination campaign
+- `configs/seir_stochastic.json` - SEIR with stochastic noise
+
+**Outputs:**
+- Plots saved to `results/` directory
+- Named as `{config_name}_{model_type}.png`
+
+**Runtime:** ~10-30 seconds per simulation
+
+### 4. Analysis Scripts
+
+The project includes specialized analysis and visualization modules.
+
+#### Visualization Module
+
+Use the visualization utilities programmatically:
+
+```python
+from analysis.visualization import (
+    plot_comparison,      # Compare scenarios
+    plot_phase_portrait,  # Create phase portraits
+    plot_R_effective,     # Plot effective reproduction number
+    plot_multi_compartment  # Plot multiple compartments
+)
+
+# Example: Compare two simulation results
+from analysis.visualization import plot_comparison
+
+fig = plot_comparison(
+    results_list=[results1, results2],
+    labels=['Scenario 1', 'Scenario 2'],
+    compartment='I',
+    title='Infection Comparison'
+)
+fig.savefig('comparison.png')
+```
+
+#### Metrics Module
+
+Calculate epidemic metrics:
+
+```python
+from analysis.metrics import (
+    calculate_peak_time,      # Find peak infection time and value
+    calculate_attack_rate,    # Calculate final attack rate
+    calculate_epidemic_duration  # Calculate epidemic duration
+)
+
+# Example: Calculate peak infection
+from analysis.metrics import calculate_peak_time
+
+peak_time, peak_value = calculate_peak_time(results, 'I')
+print(f"Peak infections: {peak_value:.2%} at day {peak_time:.1f}")
+```
+
+#### RQ1 Vaccination Timing Research
+
+Run the vaccination timing experiments:
+
+```bash
+# Quick version (~5-10 minutes)
+python experiments/rq1_vaccination_timing_quick.py
+
+# Full analysis (~2-3 hours)
+python experiments/rq1_vaccination_timing.py
+```
+
+**What it does:**
+- Analyzes optimal vaccination timing across different R₀ regimes
+- Runs deterministic and stochastic simulations
+- Performs sensitivity analysis on vaccine parameters
+- Generates comprehensive publication-quality figures
+
+**Outputs:**
+- `results/rq1_vaccination_timing/` directory with all figures and data
+
+See `experiments/RQ1_RESEARCH_GUIDE.md` for detailed research methodology.
+
+#### Other Experiment Scripts
+
+```bash
+# Basic SIR simulation example
+python experiments/basic_sir_simulation.py
+
+# SEIR with interventions example
+python experiments/seir_with_interventions.py
+
+# Model comparison
+python experiments/model_comparison.py
+
+# Stochastic simulation example
+python experiments/stochastic_simulation.py
+
+# Generate report figures
+python experiments/generate_report_figures.py
+```
+
+### Quick Reference Table
+
+| Script | Command | Runtime | Purpose |
+|--------|---------|---------|---------|
+| **Reproducibility** | `python reproduce_all_results.py` | 20-30 min | Run ALL experiments |
+| **Verification** | `python verify_and_visualize.py` | 2-5 min | Verify models & visualize |
+| **JSON Simulations** | `python run_simulation.py --config configs/{file}.json` | 10-30 sec | Run single simulation |
+| **RQ1 Quick** | `python experiments/rq1_vaccination_timing_quick.py` | 5-10 min | Quick vaccination analysis |
+| **RQ1 Full** | `python experiments/rq1_vaccination_timing.py` | 2-3 hours | Complete vaccination research |
+
 ### Programmatic Usage
 
 #### Basic SIR Simulation
