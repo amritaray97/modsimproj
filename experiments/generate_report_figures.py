@@ -12,7 +12,11 @@ Output:
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+import os
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 import pickle
 from pathlib import Path

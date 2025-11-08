@@ -12,7 +12,11 @@ For the full analysis, run: rq1_vaccination_timing.py
 """
 
 import sys
-sys.path.insert(0, '/home/user/modsimproj')
+import os
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 import numpy as np
 import matplotlib.pyplot as plt

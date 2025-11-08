@@ -87,10 +87,15 @@ class SEIRVModel(CompartmentalModel):
         return np.array([dS, dE, dI, dR, dV])
 
     def get_initial_conditions(self) -> np.ndarray:
-        
+
         return np.array([self.S0, self.E0, self.I0, self.R0, self.V0]) #Return initial conditions [S0, E0, I0, R0, V0]
 
-"""
+    def set_vaccination_campaign(self,
+                                start_time: float,
+                                duration: float,
+                                rate: float,
+                                efficacy: Optional[float] = None):
+        """
         Here, we set up a time-limited vaccination campaign.
 
         Args:
@@ -98,13 +103,7 @@ class SEIRVModel(CompartmentalModel):
             duration: How long vaccination continues
             rate: Vaccination rate (fraction per day) during campaign
             efficacy: Vaccine efficacy (if None, uses params.vaccine_efficacy)
-"""
-
-    def set_vaccination_campaign(self,
-                                start_time: float,
-                                duration: float,
-                                rate: float,
-                                efficacy: Optional[float] = None):
+        """
        
         if efficacy is not None:
             self.params.vaccine_efficacy = efficacy
@@ -116,8 +115,8 @@ class SEIRVModel(CompartmentalModel):
 
         self.vaccination_schedule = campaign_schedule
 
-
-"""
+    def calculate_total_vaccinated(self, results: Optional[dict] = None) -> float:
+        """
         We now calculate total number vaccinated (both effective and ineffective).
 
         Args:
@@ -125,8 +124,7 @@ class SEIRVModel(CompartmentalModel):
 
         Returns:
             Total fraction vaccinated
-"""
-    def calculate_total_vaccinated(self, results: Optional[dict] = None) -> float:
+        """
 
         if results is None:
             results = self.results
@@ -139,7 +137,8 @@ class SEIRVModel(CompartmentalModel):
 
         return 0.0
 
-"""
+    def calculate_attack_rate(self, results: Optional[dict] = None) -> float:
+        """
         We calculate attack rate (total infections, excluding vaccine-prevented).
 
         Args:
@@ -148,8 +147,6 @@ class SEIRVModel(CompartmentalModel):
         Returns:
             Attack rate as fraction
         """
-
-    def calculate_attack_rate(self, results: Optional[dict] = None) -> float:
         
         if results is None:
             results = self.results
@@ -161,35 +158,34 @@ class SEIRVModel(CompartmentalModel):
 
         return 0.0
 
-"""
-We calculate number of infections prevented compared to baseline.
-
-Args:
-    baseline_attack_rate: Attack rate without vaccination
-    results: Simulation results with vaccination
-
-Returns:
-    Fraction of infections prevented
-"""
     def calculate_infections_prevented(self, baseline_attack_rate: float,
                                       results: Optional[dict] = None) -> float:
+        """
+        We calculate number of infections prevented compared to baseline.
+
+        Args:
+            baseline_attack_rate: Attack rate without vaccination
+            results: Simulation results with vaccination
+
+        Returns:
+            Fraction of infections prevented
+        """
         
         vaccinated_attack_rate = self.calculate_attack_rate(results)
         return baseline_attack_rate - vaccinated_attack_rate
 
-
-"""
-We calculate percent reduction in infections.
-
-    Args:
-        baseline_attack_rate: Attack rate without vaccination
-        results: Simulation results with vaccination
-
-    Returns:
-        Percent reduction (0-100)
-"""
     def calculate_percent_reduction(self, baseline_attack_rate: float,
                                    results: Optional[dict] = None) -> float:
+        """
+        We calculate percent reduction in infections.
+
+        Args:
+            baseline_attack_rate: Attack rate without vaccination
+            results: Simulation results with vaccination
+
+        Returns:
+            Percent reduction (0-100)
+        """
         infections_prevented = self.calculate_infections_prevented(baseline_attack_rate, results)
         if baseline_attack_rate > 0:
             return 100 * infections_prevented / baseline_attack_rate

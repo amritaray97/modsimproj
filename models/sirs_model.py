@@ -32,18 +32,17 @@ class SIRSModel(CompartmentalModel):
         self.I0 = I0
         self.R0 = R0
 
-"""
-We proceed to calculate the derivatives for the SIRS model.
-
-Args:
-    t: Current time
-    y: Current state [S, I, R]
-
-Returns:
-    Array of derivatives [dS/dt, dI/dt, dR/dt]
-
-"""
     def derivatives(self, t: float, y: np.ndarray) -> np.ndarray:
+        """
+        We proceed to calculate the derivatives for the SIRS model.
+
+        Args:
+            t: Current time
+            y: Current state [S, I, R]
+
+        Returns:
+            Array of derivatives [dS/dt, dI/dt, dR/dt]
+        """
         
         S, I, R = y
 
@@ -60,13 +59,13 @@ Returns:
     def get_initial_conditions(self) -> np.ndarray:
         return np.array([self.S0, self.I0, self.R0])
 
-"""
-Now we have to calculate the endemic equilibrium if it exists.
-
-Returns:
-    Dictionary with equilibrium values for S, I, R
-"""
     def calculate_endemic_equilibrium(self) -> dict:
+        """
+        Now we have to calculate the endemic equilibrium if it exists.
+
+        Returns:
+            Dictionary with equilibrium values for S, I, R
+        """
         
         R0 = self.calculate_R0()
 
