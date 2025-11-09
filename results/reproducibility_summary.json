@@ -1,5 +1,5 @@
 {
-  "start_time": "2025-11-08T18:53:47.986576",
+  "start_time": "2025-11-08T23:04:27.144676",
   "steps_completed": [
     "Mathematical verification",
     "Simulation: sir_basic",
@@ -7,22 +7,23 @@
     "Simulation: sirs_endemic",
     "Simulation: seirv_vaccination",
     "Simulation: seir_stochastic",
+    "Model comparison",
+    "RQ1 vaccination timing (quick)",
     "Report figure generation"
   ],
-  "steps_failed": [
-    "Model comparison (timeout)",
-    "RQ1 vaccination timing (quick) (timeout)"
-  ],
+  "steps_failed": [],
   "files_generated": [
     "results/sir_basic_sir.png",
     "results/seir_with_interventions_seir.png",
     "results/sirs_endemic_sirs.png",
     "results/seirv_vaccination_seirv.png",
-    "results/seir_stochastic_seir.png"
+    "results/seir_stochastic_seir.png",
+    "results/model_comparison_20251108-223347.png",
+    "results/model_comparison_20251108-230437.png"
   ],
   "total_runtime": null,
   "file_counts": {
-    "PNG images": 5,
+    "PNG images": 7,
     "JSON data": 0,
     "PKL data": 0,
     "CSV data": 0

@@ -1,8 +1,6 @@
 """
 RQ1-Specific Visualizations Module
 
-Comprehensive publication-quality visualizations for vaccination timing research.
-All figures include proper labels, legends, titles, and annotations.
 """
 
 import numpy as np
@@ -14,7 +12,6 @@ from typing import Dict, List, Optional, Tuple
 import pandas as pd
 
 
-# Set publication-quality defaults
 plt.rcParams['font.size'] = 10
 plt.rcParams['axes.labelsize'] = 11
 plt.rcParams['axes.titlesize'] = 12
@@ -26,15 +23,6 @@ plt.rcParams['figure.titlesize'] = 14
 
 def create_comprehensive_timing_analysis(baseline_results, timing_results,
                                          R0_VALUES, save_path=None):
-    """
-    Create comprehensive multi-panel figure showing all timing analysis.
-
-    Figure includes:
-    - Attack rate vs timing (3 panels, one per R0)
-    - Peak infections vs timing (3 panels)
-    - Epidemic duration vs timing (3 panels)
-    - Summary statistics table
-    """
     fig = plt.figure(figsize=(18, 12))
     gs = GridSpec(3, 3, figure=fig, hspace=0.35, wspace=0.3,
                   left=0.08, right=0.95, top=0.93, bottom=0.05)
@@ -142,10 +130,7 @@ def create_comprehensive_timing_analysis(baseline_results, timing_results,
 
 
 def create_baseline_comparison_panel(baseline_results, R0_VALUES, save_path=None):
-    """
-    Create multi-panel comparison of baseline epidemics.
-    Shows SEIR dynamics and key metrics for each R0.
-    """
+
     fig = plt.figure(figsize=(16, 10))
     gs = GridSpec(3, 3, figure=fig, hspace=0.35, wspace=0.3)
 
@@ -243,9 +228,6 @@ def create_baseline_comparison_panel(baseline_results, R0_VALUES, save_path=None
 
 
 def create_stochastic_analysis_figure(timing_results, R0_VALUES, save_path=None):
-    """
-    Create comprehensive stochastic variability analysis with box plots and distributions.
-    """
     n_R0 = len(R0_VALUES)
     fig = plt.figure(figsize=(16, 10))
     gs = GridSpec(3, n_R0, figure=fig, hspace=0.35, wspace=0.3)
@@ -344,9 +326,7 @@ def create_stochastic_analysis_figure(timing_results, R0_VALUES, save_path=None)
 
 
 def create_sensitivity_heatmaps(sensitivity_results, R0_VALUES, save_path=None):
-    """
-    Create heatmaps showing optimal attack rate for each parameter combination.
-    """
+
     from matplotlib.colors import LinearSegmentedColormap
 
     fig, axes = plt.subplots(1, len(R0_VALUES), figsize=(15, 5))
@@ -422,9 +402,6 @@ def create_sensitivity_heatmaps(sensitivity_results, R0_VALUES, save_path=None):
 
 
 def create_benefit_waterfall(baseline_results, timing_results, R0_VALUES, save_path=None):
-    """
-    Create waterfall chart showing vaccination benefit across R0 values.
-    """
     fig, ax = plt.subplots(figsize=(12, 7))
 
     baseline_ars = []
@@ -512,9 +489,7 @@ def create_benefit_waterfall(baseline_results, timing_results, R0_VALUES, save_p
 
 def create_timing_window_analysis(baseline_results, timing_results,
                                   R0_VALUES, save_path=None):
-    """
-    Create figure showing optimal timing windows and their characteristics.
-    """
+
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     axes = axes.flatten()
 
@@ -678,9 +653,6 @@ def create_timing_window_analysis(baseline_results, timing_results,
 
 def create_vaccination_dynamics_examples(baseline_results, timing_results,
                                          R0_VALUES, save_path=None):
-    """
-    Show example vaccination dynamics for early vs optimal vs late timing.
-    """
     fig = plt.figure(figsize=(16, 12))
     gs = GridSpec(len(R0_VALUES), 3, figure=fig, hspace=0.3, wspace=0.3)
 
@@ -703,18 +675,18 @@ def create_vaccination_dynamics_examples(baseline_results, timing_results,
             t_start = t_starts[timing_idx]
             ar = attack_rates[timing_idx]
 
-            # Plot SEIRV dynamics
+            # SEIRV dynamics
             ax.plot(results['t'], results['S'], linewidth=2.5, label='S', color='#0077BB')
             ax.plot(results['t'], results['E'], linewidth=2.5, label='E', color='#EE7733')
             ax.plot(results['t'], results['I'], linewidth=2.5, label='I', color='#CC3311')
             ax.plot(results['t'], results['R'], linewidth=2.5, label='R', color='#009988')
             ax.plot(results['t'], results['V'], linewidth=2.5, label='V', color='#9933CC')
 
-            # Mark vaccination start
+            # vaccination start
             ax.axvline(t_start, color='black', linestyle='--', linewidth=2,
                       label=f'Vax starts (t={t_start:.0f})')
 
-            # Shade vaccination period
+            # vaccination period
             ax.axvspan(t_start, results['t'][-1], alpha=0.1, color='purple')
 
             ax.set_xlabel('Time (days)', fontweight='bold', fontsize=11)

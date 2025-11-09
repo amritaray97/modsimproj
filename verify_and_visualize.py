@@ -27,6 +27,8 @@ class MathematicalVerifier:
     def __init__(self):
         self.verification_results = {}
         self.timestr = time.strftime("%Y%m%d-%H%M%S")
+        self.output_dir = Path(f'results/math_verify_{self.timestr}')
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def verify_sir_equations(self):
         """
@@ -267,7 +269,7 @@ class ComprehensiveVisualizer:
 
     def __init__(self):
         self.timestr = time.strftime("%Y%m%d-%H%M%S")
-        self.output_dir = Path(f'results/math_verify_{self.timestr}')
+        self.output_dir = Path(f'results/comprehensive_plots_{self.timestr}')
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.results_store = {}
 
@@ -536,10 +538,10 @@ def main():
         'timestamp': str(np.datetime64('now'))
     }
 
-    with open(visualizer.output_dir / 'verification_results.json', 'w') as f:
+    with open(verifier.output_dir / 'verification_results.json', 'w') as f:
         json.dump(output_data, f, indent=2)
 
-    print(f"\n Results saved to: {visualizer.output_dir}")
+    print(f"\n Results saved to: {verifier.output_dir}")
     print(f" Verification data: verification_results.json")
 
     print("\n" + "="*60)

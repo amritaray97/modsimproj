@@ -1,0 +1,31 @@
+RQ1 VACCINATION TIMING RESEARCH - FIGURE INDEX
+======================================================================
+
+Figure 1: Comprehensive Timing Analysis
+  File: figure1_comprehensive_timing_analysis.png
+  Description: 9-panel figure showing attack rate, peak infections,
+               and epidemic duration vs vaccination timing for each R₀
+Figure 2: Baseline Epidemic Dynamics
+  File: figure2_baseline_comparison.png
+  Description: SEIR dynamics, phase portraits, and R_eff plots
+               for baseline epidemics (no vaccination)
+Figure 3: Stochastic Variability Analysis
+  File: figure3_stochastic_analysis.png
+  Description: Box plots, confidence intervals, and coefficient
+               of variation for stochastic simulations
+Figure 4: Parameter Sensitivity Heatmaps
+  File: figure4_sensitivity_heatmaps.png
+  Description: Heatmaps showing optimal attack rates for different
+               vaccine efficacy and vaccination rate combinations
+Figure 5: Vaccination Benefit Waterfall Chart
+  File: figure5_benefit_waterfall.png
+  Description: Bar chart comparing baseline vs optimal vaccination
+               showing absolute and relative reductions
+Figure 6: Optimal Timing Windows Analysis
+  File: figure6_timing_windows.png
+  Description: 4-panel analysis of optimal timing, window widths,
+               relative timing, and summary table
+Figure 7: Vaccination Dynamics Examples
+  File: figure7_vaccination_dynamics.png
+  Description: SEIRV time series for early, optimal, and late
+               vaccination scenarios

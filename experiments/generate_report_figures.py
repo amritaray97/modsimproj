@@ -24,14 +24,15 @@ from analysis.rq1_visualizations import (
 
 
 def main():
-# figures from saved RQ1 results.
-
     print("\n" + "="*80)
     print(" "*20 + "RQ1 REPORT FIGURE GENERATION")
     print("="*80)
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    results_dir = Path('/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_vaccination_timing')
-    output_dir = f'{results_dir}/report_figures_{timestr}'
+    results_dir = Path('/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_vaccination_timing/')
+    output_dir = Path(f'{results_dir}/report_figures_{timestr}')
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+
     # results_dir.append{'/report_figures_{timestr}'}
     # output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -72,7 +73,6 @@ def main():
     R0_VALUES = list(baseline_results.keys())
     print(f"\nR₀ values found: {R0_VALUES}")
 
-    # Generate figures
     print("\n" + "="*80)
     print("GENERATING FIGURES")
     print("="*80)
@@ -81,7 +81,7 @@ def main():
 
     # Figure 1: Comprehensive Timing Analysis
     print("\n[1/7] Creating comprehensive timing analysis...")
-    fig1_path = output_dir / 'figure1_comprehensive_timing_analysis.png'
+    fig1_path = f"{output_dir}/figure1_comprehensive_timing_analysis.png"
     try:
         create_comprehensive_timing_analysis(
             baseline_results, timing_results, R0_VALUES, save_path=fig1_path
@@ -93,7 +93,7 @@ def main():
 
     # Figure 2: Baseline Comparison
     print("\n[2/7] Creating baseline comparison panel...")
-    fig2_path = output_dir / 'figure2_baseline_comparison.png'
+    fig2_path = f'{output_dir}/figure2_baseline_comparison.png'
     try:
         create_baseline_comparison_panel(
             baseline_results, R0_VALUES, save_path=fig2_path
@@ -105,7 +105,7 @@ def main():
 
     # Figure 3: Stochastic Analysis
     print("\n[3/7] Creating stochastic variability analysis...")
-    fig3_path = output_dir / 'figure3_stochastic_analysis.png'
+    fig3_path = f'{output_dir}/figure3_stochastic_analysis.png'
     try:
         # Check if stochastic data exists
         if len(timing_results[R0_VALUES[0]]['stochastic']) > 0:
@@ -122,7 +122,7 @@ def main():
     # Figure 4: Sensitivity Heatmaps
     if has_sensitivity and sensitivity_results is not None:
         print("\n[4/7] Creating parameter sensitivity heatmaps...")
-        fig4_path = output_dir / 'figure4_sensitivity_heatmaps.png'
+        fig4_path = f'{output_dir}/figure4_sensitivity_heatmaps.png'
         try:
             create_sensitivity_heatmaps(
                 sensitivity_results, R0_VALUES, save_path=fig4_path
@@ -136,7 +136,7 @@ def main():
 
     # Figure 5: Benefit Waterfall
     print("\n[5/7] Creating vaccination benefit waterfall chart...")
-    fig5_path = output_dir / 'figure5_benefit_waterfall.png'
+    fig5_path = f'{output_dir}/figure5_benefit_waterfall.png'
     try:
         create_benefit_waterfall(
             baseline_results, timing_results, R0_VALUES, save_path=fig5_path
@@ -160,7 +160,7 @@ def main():
 
     # Figure 7: Vaccination Dynamics Examples
     print("\n[7/7] Creating vaccination dynamics examples...")
-    fig7_path = output_dir / 'figure7_vaccination_dynamics.png'
+    fig7_path = f'{output_dir}/figure7_vaccination_dynamics.png'
     try:
         create_vaccination_dynamics_examples(
             baseline_results, timing_results, R0_VALUES, save_path=fig7_path
@@ -178,89 +178,59 @@ def main():
     for i, fig_name in enumerate(figures_generated, 1):
         print(f"  {i}. {fig_name}")
 
-    print(f"\n📁 All figures saved to: {output_dir}")
+    print(f"\n All figures saved to: {output_dir}")
 
     # index files
     print("\nCreating figure index...")
-    index_path = output_dir / 'FIGURE_INDEX.txt'
+    index_path = f'{output_dir}/FIGURE_INDEX.txt'
     with open(index_path, 'w') as f:
         f.write("RQ1 VACCINATION TIMING RESEARCH - FIGURE INDEX\n")
         f.write("=" * 70 + "\n\n")
-
-        f.write("FIGURES FOR REPORT:\n\n")
 
         if 'Figure 1: Comprehensive Timing Analysis' in figures_generated:
             f.write("Figure 1: Comprehensive Timing Analysis\n")
             f.write("  File: figure1_comprehensive_timing_analysis.png\n")
             f.write("  Description: 9-panel figure showing attack rate, peak infections,\n")
             f.write("               and epidemic duration vs vaccination timing for each R₀\n")
-            f.write("  Use in: Main results section\n\n")
 
         if 'Figure 2: Baseline Epidemic Dynamics' in figures_generated:
             f.write("Figure 2: Baseline Epidemic Dynamics\n")
             f.write("  File: figure2_baseline_comparison.png\n")
             f.write("  Description: SEIR dynamics, phase portraits, and R_eff plots\n")
             f.write("               for baseline epidemics (no vaccination)\n")
-            f.write("  Use in: Methods/baseline characterization section\n\n")
 
         if 'Figure 3: Stochastic Variability' in figures_generated:
             f.write("Figure 3: Stochastic Variability Analysis\n")
             f.write("  File: figure3_stochastic_analysis.png\n")
             f.write("  Description: Box plots, confidence intervals, and coefficient\n")
             f.write("               of variation for stochastic simulations\n")
-            f.write("  Use in: Uncertainty analysis section\n\n")
 
         if 'Figure 4: Parameter Sensitivity Heatmaps' in figures_generated:
             f.write("Figure 4: Parameter Sensitivity Heatmaps\n")
             f.write("  File: figure4_sensitivity_heatmaps.png\n")
             f.write("  Description: Heatmaps showing optimal attack rates for different\n")
             f.write("               vaccine efficacy and vaccination rate combinations\n")
-            f.write("  Use in: Sensitivity analysis section\n\n")
 
         if 'Figure 5: Vaccination Benefit Analysis' in figures_generated:
             f.write("Figure 5: Vaccination Benefit Waterfall Chart\n")
             f.write("  File: figure5_benefit_waterfall.png\n")
             f.write("  Description: Bar chart comparing baseline vs optimal vaccination\n")
             f.write("               showing absolute and relative reductions\n")
-            f.write("  Use in: Key findings/discussion section\n\n")
 
         if 'Figure 6: Optimal Timing Windows' in figures_generated:
             f.write("Figure 6: Optimal Timing Windows Analysis\n")
             f.write("  File: figure6_timing_windows.png\n")
             f.write("  Description: 4-panel analysis of optimal timing, window widths,\n")
             f.write("               relative timing, and summary table\n")
-            f.write("  Use in: Results/interpretation section\n\n")
 
         if 'Figure 7: Vaccination Dynamics Examples' in figures_generated:
             f.write("Figure 7: Vaccination Dynamics Examples\n")
             f.write("  File: figure7_vaccination_dynamics.png\n")
             f.write("  Description: SEIRV time series for early, optimal, and late\n")
             f.write("               vaccination scenarios\n")
-            f.write("  Use in: Methods/illustration section\n\n")
+    
 
-        f.write("\n" + "=" * 70 + "\n")
-        f.write("SUGGESTED REPORT STRUCTURE:\n\n")
-        f.write("1. Introduction\n")
-        f.write("   - Use Figure 7 to illustrate vaccination model\n\n")
-        f.write("2. Methods\n")
-        f.write("   - Use Figure 2 to show baseline characterization\n\n")
-        f.write("3. Results\n")
-        f.write("   - Use Figure 1 as main result (comprehensive timing analysis)\n")
-        f.write("   - Use Figure 5 to highlight key benefit findings\n")
-        f.write("   - Use Figure 6 to explain optimal windows\n\n")
-        f.write("4. Sensitivity Analysis\n")
-        f.write("   - Use Figure 4 (if available) for parameter sensitivity\n")
-        f.write("   - Use Figure 3 (if available) for stochastic uncertainty\n\n")
-        f.write("5. Discussion\n")
-        f.write("   - Reference all figures to support conclusions\n")
-
-    print(f"  ✓ Figure index saved to: {index_path}")
-
-    print("\n" + "="*80)
-    print("DONE!")
-    print("="*80)
-    print("\nYour report figures are ready to use!")
-    print(f"Check the FIGURE_INDEX.txt file for descriptions and usage suggestions.")
+    print(f"Figure index saved to: {index_path}")
 
 
 if __name__ == "__main__":

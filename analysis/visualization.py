@@ -12,19 +12,6 @@ def plot_comparison(results_list: List[Dict],
                    compartment: str = 'I',
                    title: Optional[str] = None,
                    figsize: tuple = (12, 6)) -> plt.Figure:
-    """
-    Plot comparison of a compartment across multiple scenarios.
-
-    Args:
-        results_list: List of simulation results
-        labels: Labels for each scenario
-        compartment: Which compartment to plot
-        title: Plot title (optional)
-        figsize: Figure size
-
-    Returns:
-        Matplotlib figure
-    """
     fig, ax = plt.subplots(figsize=figsize)
 
     for results, label in zip(results_list, labels):
@@ -44,18 +31,7 @@ def plot_phase_portrait(results: Dict,
                        x_compartment: str = 'S',
                        y_compartment: str = 'I',
                        figsize: tuple = (8, 8)) -> plt.Figure:
-    """
-    Create a phase portrait showing trajectory in state space.
 
-    Args:
-        results: Model simulation results
-        x_compartment: Compartment for x-axis
-        y_compartment: Compartment for y-axis
-        figsize: Figure size
-
-    Returns:
-        Matplotlib figure
-    """
     if x_compartment not in results or y_compartment not in results:
         raise ValueError(f"Compartments {x_compartment} and {y_compartment} must be in results")
 
@@ -64,7 +40,7 @@ def plot_phase_portrait(results: Dict,
     x = results[x_compartment]
     y = results[y_compartment]
 
-    # Plot trajectory with color gradient showing time
+    # trajectory with color gradient showing time
     points = np.array([x, y]).T.reshape(-1, 1, 2)
     from matplotlib.collections import LineCollection
 
@@ -75,7 +51,7 @@ def plot_phase_portrait(results: Dict,
     ax.add_collection(lc)
     ax.autoscale()
 
-    # Mark start and end
+    # start and end
     ax.plot(x[0], y[0], 'go', markersize=10, label='Start')
     ax.plot(x[-1], y[-1], 'ro', markersize=10, label='End')
 
@@ -95,18 +71,6 @@ def plot_R_effective(results: Dict,
                     beta: float,
                     gamma: float,
                     figsize: tuple = (10, 6)) -> plt.Figure:
-    """
-    Plot the effective reproduction number over time.
-
-    Args:
-        results: Model simulation results (must contain 'S')
-        beta: Transmission rate
-        gamma: Recovery rate
-        figsize: Figure size
-
-    Returns:
-        Matplotlib figure
-    """
     if 'S' not in results:
         raise ValueError("Results must contain 'S' compartment")
 
@@ -131,17 +95,7 @@ def plot_R_effective(results: Dict,
 def plot_multi_compartment(results: Dict,
                           compartments: Optional[List[str]] = None,
                           figsize: tuple = (12, 8)) -> plt.Figure:
-    """
-    Plot multiple compartments on the same figure.
-
-    Args:
-        results: Model simulation results
-        compartments: List of compartments to plot (None = all)
-        figsize: Figure size
-
-    Returns:
-        Matplotlib figure
-    """
+    
     if compartments is None:
         compartments = [k for k in results.keys() if k != 't']
 

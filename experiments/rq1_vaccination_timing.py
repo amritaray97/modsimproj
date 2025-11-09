@@ -61,7 +61,7 @@ T_EVAL_POINTS = 2000 # Time points for evaluation
 # Output directory
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
-OUTPUT_DIR = Path(f'/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_comprehensive_{timestr}')
+OUTPUT_DIR = Path(f'/Users/vnutrenni/Documents/Master2024/Year2/Sem_1A/ModellingSimulation/modsimproj/results/rq1_vaccination_timing')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 

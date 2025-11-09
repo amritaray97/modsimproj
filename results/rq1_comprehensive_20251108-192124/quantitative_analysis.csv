@@ -1,4 +1,0 @@
-R0,Baseline_AR,Peak_Time,Optimal_Start_Time,Optimal_AR,Percent_Reduction,Effective_Window,Window_Width
-1.5,59.36%,105.6,0.0,81.39%,-37.1%,0-48 days,48 days
-2.5,89.41%,60.1,0.0,87.70%,1.9%,0-13 days,13 days
-4.0,98.04%,40.0,0.0,93.77%,4.4%,0-23 days,23 days
