@@ -31,7 +31,7 @@ class ConfigLoader:
                 raise ValueError(f"Missing required field in config: {field}")
 
         # Validate model type
-        valid_models = ['SIR', 'SEIR', 'SIRS', 'SEIRV']
+        valid_models = ['SIR', 'SEIR', 'SIRS', 'SIRD', 'SEIRV']
         if self.config['model']['type'] not in valid_models:
             raise ValueError(f"Invalid model type. Must be one of: {valid_models}")
 

@@ -34,6 +34,10 @@ class SEIRParameters(SIRParameters):
 class SIRSParameters(SIRParameters):
     omega: float = 0.01  # Waning immunity rate
 
+@dataclass
+class SIRDParameters(SIRParameters):
+    mu: float = 0.01  # Disease-induced mortality rate (fraction of infected who die)
+
 
 """
 Abstract base class for all epidemic models

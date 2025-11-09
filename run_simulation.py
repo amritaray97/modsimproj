@@ -18,10 +18,11 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, str(Path(__file__).parent))
 
 from config_loader import ConfigLoader
-from core.base_models import SIRParameters, SEIRParameters, SIRSParameters
+from core.base_models import SIRParameters, SEIRParameters, SIRSParameters, SIRDParameters
 from models.sir_model import SIRModel
 from models.seir_model import SEIRModel
 from models.sirs_model import SIRSModel
+from models.sird_model import SIRDModel
 from models.seirv_model import SEIRVModel, SEIRVParameters
 from models.mixin_models import SEIRWithInterventions, SIRWithInterventions
 
@@ -88,6 +89,16 @@ class SimulationRunner:
                 S0=initial_conditions['S0'],
                 I0=initial_conditions['I0'],
                 R0=initial_conditions['R0']
+            )
+
+        elif model_type == 'SIRD':
+            params = SIRDParameters(**params_dict)
+            self.model = SIRDModel(
+                params=params,
+                S0=initial_conditions['S0'],
+                I0=initial_conditions['I0'],
+                R0=initial_conditions['R0'],
+                D0=initial_conditions.get('D0', 0.0)
             )
 
         elif model_type == 'SEIRV':
